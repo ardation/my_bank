@@ -27,7 +27,7 @@ class Ynab::PushService
       {
         account_id: account_id,
         date: transaction.date.strftime,
-        amount: (transaction.amount * 100).to_i,
+        amount: (transaction.amount * 1000).to_i,
         payee_name: transaction.payee_name,
         memo: transaction.memo
       }
