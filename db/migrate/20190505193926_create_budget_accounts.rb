@@ -3,7 +3,7 @@ class CreateBudgetAccounts < ActiveRecord::Migration[6.0]
     create_table :budget_accounts, id: :uuid do |t|
       t.string :name
       t.string :remote_id
-      t.belongs_to :budget
+      t.belongs_to :budget, null: false, foreign_key: { on_delete: :cascade }, type: :uuid
 
       t.timestamps
     end
