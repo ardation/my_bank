@@ -13,4 +13,8 @@ class Ynab::ClientService
   def accounts(budget_id)
     self.class.get("/v1/budgets/#{budget_id}/accounts", @options).parsed_response['data']['accounts']
   end
+
+  def create_transactions(budget_id, transactions)
+    self.class.post("/v1/budgets/#{budget_id}/transactions", @options.merge(body: { transactions: transactions }))
+  end
 end

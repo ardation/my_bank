@@ -10,19 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_06_134053) do
+ActiveRecord::Schema.define(version: 2019_05_06_142739) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
+  create_table "bank_account_links", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "bank_account_id", null: false
+    t.uuid "budget_account_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["bank_account_id"], name: "index_bank_account_links_on_bank_account_id"
+    t.index ["budget_account_id"], name: "index_bank_account_links_on_budget_account_id"
+  end
+
   create_table "bank_account_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.date "date"
     t.string "payee_name"
     t.string "memo"
-    t.decimal "amount"
+    t.decimal "amount", precision: 8, scale: 2
     t.uuid "account_id", null: false
+    t.boolean "sync", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["account_id"], name: "index_bank_account_transactions_on_account_id"
@@ -54,6 +64,8 @@ ActiveRecord::Schema.define(version: 2019_05_06_134053) do
     t.index ["remote_id"], name: "index_budgets_on_remote_id", unique: true
   end
 
+  add_foreign_key "bank_account_links", "bank_accounts", on_delete: :cascade
+  add_foreign_key "bank_account_links", "budget_accounts", on_delete: :cascade
   add_foreign_key "bank_account_transactions", "bank_accounts", column: "account_id", on_delete: :cascade
   add_foreign_key "budget_accounts", "budgets", on_delete: :cascade
 end
