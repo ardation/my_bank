@@ -20,5 +20,8 @@ module AnzYnab
       generator.orm :active_record, primary_key_type: :uuid
       generator.orm :active_record, foreign_key_type: :uuid
     end
+
+    config.time_zone = 'Auckland'
+    config.active_record.default_timezone = :local
   end
 end
