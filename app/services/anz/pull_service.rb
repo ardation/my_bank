@@ -40,8 +40,8 @@ class Anz::PullService
            .find_or_initialize_by(
              amount: remote_transaction['amount']['amount'],
              date: Date.strptime(remote_transaction['date'], '%Y-%m-%d'),
-             payee_name: remote_transaction['details'][0],
-             memo: remote_transaction['details'][1]
+             payee_name: remote_transaction['details'][0].strip,
+             memo: remote_transaction['details'][1].strip
            )
   end
 end
