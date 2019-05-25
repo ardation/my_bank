@@ -71,6 +71,8 @@ GEM
     arbre (1.2.1)
       activesupport (>= 3.0.0)
     ast (2.4.0)
+    attr_encrypted (3.1.0)
+      encryptor (~> 3.0.0)
     awesome_print (1.8.0)
     awesome_rails_console (0.4.3)
       awesome_print
@@ -105,6 +107,7 @@ GEM
     dotenv-rails (2.7.2)
       dotenv (= 2.7.2)
       railties (>= 3.2, < 6.1)
+    encryptor (3.0.0)
     erubi (1.8.0)
     execjs (2.7.0)
     factory_bot (5.0.0)
@@ -187,6 +190,8 @@ GEM
     nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
     ntlm-http (0.1.1)
+    ofx (0.3.2)
+      nokogiri
     orm_adapter (0.5.0)
     parallel (1.17.0)
     parser (2.6.3.0)
@@ -335,6 +340,7 @@ PLATFORMS
 
 DEPENDENCIES
   activeadmin
+  attr_encrypted (~> 3.1.0)
   awesome_rails_console
   bootsnap (>= 1.4.2)
   devise
@@ -345,6 +351,7 @@ DEPENDENCIES
   httparty
   listen (>= 3.0.5, < 3.2)
   mechanize
+  ofx
   pg (>= 0.18, < 2.0)
   pry-byebug
   pry-stack_explorer

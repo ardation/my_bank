@@ -4,11 +4,13 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.1'
 
 gem 'activeadmin'
+gem 'attr_encrypted', '~> 3.1.0'
 gem 'awesome_rails_console'
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'devise'
 gem 'httparty'
 gem 'mechanize'
+gem 'ofx'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'puma', '~> 3.11'
 gem 'rails', '~> 6.0.0.rc1'

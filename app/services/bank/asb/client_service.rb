@@ -1,4 +1,4 @@
-class Asb::ClientService
+class Bank::Asb::ClientService
   def initialize
     login
   end
