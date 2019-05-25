@@ -12,7 +12,7 @@ class Bank::Anz::ClientService
       begin
         ofx_account = transactions(remote_account['id']).account
       rescue StandardError
-        puts 'no transactions found'
+        Rails.logger('no transactions found')
       end
       { ofx_account: ofx_account, anz_account: remote_account }
     end

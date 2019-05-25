@@ -38,14 +38,14 @@ class Bank::Anz::PullService
   def account_attributes(anz_account, ofx_account)
     {
       name: [anz_account['productName'], anz_account['nickname']].compact.join(', '),
-      balance: ofx_account&.balance&.amount,
-      balance_posted_at: ofx_account&.balance&.posted_at,
+      balance: ofx_account&.balance&.amount || anz_account.dig('balance', 'amount'),
+      balance_posted_at: ofx_account&.balance&.posted_at || Time.zone.now,
       remote_bank_id: ofx_account&.bank_id,
       remote_account_id: ofx_account&.id,
-      currency: ofx_account&.currency,
-      account_type: ofx_account&.type,
-      available_balance: ofx_account&.available_balance&.amount,
-      available_balance_posted_at: ofx_account&.available_balance&.posted_at
+      currency: ofx_account&.currency || anz_account.dig('balance', 'currencyCode'),
+      account_type: ofx_account&.type || anz_account['accountType'],
+      available_balance: ofx_account&.available_balance&.amount || anz_account.dig('availableFunds', 'amount'),
+      available_balance_posted_at: ofx_account&.available_balance&.posted_at || Time.zone.now
     }.delete_if { |_k, v| v.nil? }
   end
 
