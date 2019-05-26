@@ -1,0 +1,30 @@
+<h1 class="m-0 px-3 pb-3 border-bottom border-primary"><%= account.name %></h1>
+<table class="table mb-0">
+  <thead>
+    <tr class="d-flex">
+      <th scope="col" class="col-2">Date</th>
+      <th scope="col" class="col-2">Type</th>
+      <th scope="col" class="col-4">Details</th>
+      <th scope="col" class="col-2 text-right">Deposits</th>
+      <th scope="col" class="col-2 text-right">Withdrawals</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% transactions.each do |transaction| %>
+    <tr class="d-flex">
+      <td class="col-2"><%= localize transaction.posted_at.to_date, format: :default %></td>
+      <td class="col-2"><%= transaction.transaction_type %></td>
+      <td class="col-4">
+        <%= transaction.name %>
+        <br><small class="text-muted"><%= transaction.memo %></small>
+      </td>
+      <td class="col-2 text-right"><%= transaction.amount.format if transaction.amount >= 0 %></td>
+      <td class="col-2 text-right"><%= transaction.amount.format.gsub('-', '') if transaction.amount < 0 %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<div class="py-4 border-top border-primary text-center">
+  <div class="d-flex justify-content-center"><%= paginate transactions, theme: 'twitter-bootstrap-4' %></div>
+  <div><%= page_entries_info transactions %></div>
+</div>

@@ -10,6 +10,9 @@
   </head>
 
   <body>
-    <%= yield %>
+    <%= render 'breadcrumbs' %>
+    <div class="container py-2">
+      <%= yield %>
+    </div>
   </body>
 </html>

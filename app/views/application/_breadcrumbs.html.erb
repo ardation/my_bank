@@ -1,0 +1,11 @@
+<div class="container py-3">
+  <nav aria-label="breadcrumb">
+    <ol class='breadcrumb mb-0'>
+      <% breadcrumb_trail do |crumb| %>
+        <li class="breadcrumb-item<%= current_page?(crumb.url) ? ' active' : '' %>">
+          <%= link_to_unless current_page?(crumb.url), crumb.name, crumb.url, (current_page?(crumb.url) ? {'aria-current' => 'page'} : {}) %>
+        </li>
+      <% end %>
+    </ol>
+  </nav>
+</div>

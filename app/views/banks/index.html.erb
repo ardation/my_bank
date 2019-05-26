@@ -1,0 +1,14 @@
+<h1 class="m-0 px-3 pb-3 border-bottom border-primary">My Banks</h1>
+<% banks.each do |bank| %>
+  <div class="container">
+    <div class="row py-3 border-bottom">
+      <div class="col">
+        <h3 class="mb-0"><%= link_to bank.name, bank_path(bank) %></h3>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="py-4 border-top border-primary text-center">
+  <div class="d-flex justify-content-center"><%= paginate banks, theme: 'twitter-bootstrap-4' %></div>
+  <div><%= page_entries_info banks %></div>
+</div>

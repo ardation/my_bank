@@ -37,7 +37,8 @@ class Bank::Anz::PullService
 
   def account_attributes(anz_account, ofx_account)
     {
-      name: [anz_account['productName'], anz_account['nickname']].compact.join(', '),
+      name: anz_account['productName'],
+      nickname: anz_account['nickname'],
       balance: ofx_account&.balance&.amount || anz_account.dig('balance', 'amount'),
       balance_posted_at: ofx_account&.balance&.posted_at || Time.zone.now,
       remote_bank_id: ofx_account&.bank_id,
