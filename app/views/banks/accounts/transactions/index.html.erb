@@ -1,4 +1,20 @@
-<h1 class="m-0 px-3 pb-3 border-bottom border-primary"><%= account.name %></h1>
+<div class="row px-3 pb-3">
+  <div class="col">
+    <h5 class="mb-0"><%= account.name %></h5>
+    <small class="text-muted"><%= account.remote_id %></small>
+  </div>
+  <div class="col text-right">
+    <h5 class="mb-0">
+      <% if account.balance.amount < 0 %>
+        <span class="badge badge-warning">OD</span>
+        <%= account.balance.format.gsub('-', '') %>
+      <% else %>
+        <%= account.balance.format %>
+      <% end %>
+    </h5>
+    <small class="text-muted">Available <%= account.available_balance.format %></small>
+  </div>
+</div>
 <table class="table mb-0">
   <thead>
     <tr class="d-flex">

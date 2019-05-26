@@ -3,7 +3,8 @@
   <div class="container">
     <div class="row py-3 border-bottom">
       <div class="col">
-        <h3 class="mb-0"><%= link_to bank.name, bank_path(bank) %></h3>
+        <h3 class="mb-1"><%= link_to image_pack_tag("banks/#{bank.name.underscore}.png", style: 'height: 50px'), bank_path(bank) %></h3>
+        <small class="text-muted"><%= bank.username %></small>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-<h1 class="m-0 px-3 pb-3 border-bottom border-primary"><%= bank.name %></h1>
+<h1 class="m-0 px-3 pb-4 border-bottom border-primary"><%= image_pack_tag("banks/#{bank.name.underscore}.png", style: 'height: 50px')%></h1>
 <% accounts.each do |account| %>
   <div class="container">
     <div class="row py-3 border-bottom">
