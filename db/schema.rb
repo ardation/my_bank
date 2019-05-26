@@ -10,21 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_06_142739) do
+ActiveRecord::Schema.define(version: 2019_05_25_052228) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
-
-  create_table "bank_account_links", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "bank_account_id", null: false
-    t.uuid "budget_account_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["bank_account_id"], name: "index_bank_account_links_on_bank_account_id"
-    t.index ["budget_account_id"], name: "index_bank_account_links_on_budget_account_id"
-  end
 
   create_table "bank_account_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.decimal "amount", precision: 8, scale: 2
@@ -78,22 +69,37 @@ ActiveRecord::Schema.define(version: 2019_05_06_142739) do
     t.index ["user_id"], name: "index_banks_on_user_id"
   end
 
-  create_table "budget_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "integration_ynab_budget_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "remote_id"
     t.uuid "budget_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["budget_id"], name: "index_budget_accounts_on_budget_id"
-    t.index ["remote_id"], name: "index_budget_accounts_on_remote_id", unique: true
+    t.index ["budget_id", "remote_id"], name: "idx_ynab_budget_account_ids", unique: true
+    t.index ["budget_id"], name: "index_integration_ynab_budget_accounts_on_budget_id"
   end
 
-  create_table "budgets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "integration_ynab_budgets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "integration_id", null: false
     t.string "name"
     t.string "remote_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["remote_id"], name: "index_budgets_on_remote_id", unique: true
+    t.index ["integration_id", "remote_id"], name: "index_integration_ynab_budgets_on_integration_id_and_remote_id", unique: true
+    t.index ["integration_id"], name: "index_integration_ynab_budgets_on_integration_id"
+  end
+
+  create_table "integrations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "type"
+    t.uuid "user_id", null: false
+    t.string "provider"
+    t.string "uid"
+    t.text "info"
+    t.text "credentials"
+    t.text "extra"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_integrations_on_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -122,10 +128,10 @@ ActiveRecord::Schema.define(version: 2019_05_06_142739) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
-  add_foreign_key "bank_account_links", "bank_accounts", on_delete: :cascade
-  add_foreign_key "bank_account_links", "budget_accounts", on_delete: :cascade
   add_foreign_key "bank_account_transactions", "bank_accounts", column: "account_id", on_delete: :cascade
   add_foreign_key "bank_accounts", "banks", on_delete: :cascade
   add_foreign_key "banks", "users", on_delete: :cascade
-  add_foreign_key "budget_accounts", "budgets", on_delete: :cascade
+  add_foreign_key "integration_ynab_budget_accounts", "integration_ynab_budgets", column: "budget_id", on_delete: :cascade
+  add_foreign_key "integration_ynab_budgets", "integrations", on_delete: :cascade
+  add_foreign_key "integrations", "users", on_delete: :cascade
 end

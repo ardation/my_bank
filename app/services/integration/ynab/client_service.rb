@@ -1,9 +1,9 @@
-class Ynab::ClientService
+class Integration::Ynab::ClientService
   include HTTParty
   base_uri 'api.youneedabudget.com'
 
-  def initialize
-    @options = { headers: { 'Authorization' => "Bearer #{ENV.fetch('YNAB_ACCESS_TOKEN')}" }, format: :json }
+  def initialize(integration)
+    @options = { headers: { 'Authorization' => "Bearer #{integration.access_token}" }, format: :json }
   end
 
   def budgets

@@ -1,17 +1,23 @@
-class Ynab::PullService
-  def client
-    @client ||= Ynab::ClientService.new
+class Integration::Ynab::PullService
+  attr_reader :integration
+
+  def initialize(integration)
+    @integration = integration
   end
 
-  def self.pull
-    instance = new
+  def client
+    @client ||= Integration::Ynab::ClientService.new(integration)
+  end
+
+  def self.pull(integration)
+    instance = new(integration)
     instance.pull_budgets
     instance.pull_accounts
   end
 
   def pull_budgets
     client.budgets.each do |remote_budget|
-      budget = Budget.find_or_initialize_by(remote_id: remote_budget['id'])
+      budget = integration.budgets.find_or_initialize_by(remote_id: remote_budget['id'])
       budget.attributes = {
         name: remote_budget['name']
       }
@@ -20,7 +26,7 @@ class Ynab::PullService
   end
 
   def pull_accounts
-    Budget.find_each do |budget|
+    integration.budgets.find_each do |budget|
       client.accounts(budget.remote_id).each do |remote_account|
         account = budget.accounts.find_or_initialize_by(remote_id: remote_account['id'])
         account.attributes = {

@@ -1,6 +1,12 @@
-class Ynab::PushService
+class Integration::Ynab::PushService
+  attr_reader :integration
+
+  def initialize(integration)
+    @integration = integration
+  end
+
   def client
-    @client ||= Ynab::ClientService.new
+    @client ||= Integration::Ynab::ClientService.new(integration)
   end
 
   def self.push
@@ -9,13 +15,12 @@ class Ynab::PushService
   end
 
   def push_transactions
-    Budget.find_each do |budget|
+    integration.budgets.find_each do |budget|
       budget.accounts.find_each do |budget_account|
-        transactions = budget_account.transactions.where(sync: false)
+        transactions = budget_account.transactions
         next if transactions.blank?
 
         client.create_transactions(budget.remote_id, transactions_attributes(budget_account.remote_id, transactions))
-        transactions.update_all(sync: true) # rubocop:disable Rails/SkipsModelValidations
       end
     end
   end
