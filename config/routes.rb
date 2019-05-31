@@ -4,9 +4,9 @@ Rails.application.routes.draw do
 
   resources :banks do
     scope module: :banks do
-      resources :accounts do
+      resources :accounts, only: %i[index show] do
         scope module: :accounts do
-          resources :transactions
+          resources :transactions, only: :index
         end
       end
     end

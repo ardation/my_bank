@@ -13,6 +13,7 @@ class Bank < ApplicationRecord
   attr_encrypted :password, key: [ENV.fetch('BANK_PASSWORD_KEY')].pack('H*')
 
   validates :type, inclusion: { in: Bank::TYPES.values }, presence: true
+  validates :username, :password, presence: true
   validate :validate_credentials
 
   def pull
@@ -22,6 +23,8 @@ class Bank < ApplicationRecord
   protected
 
   def validate_credentials
+    return false unless Bank::TYPES.values.include?(type) && username.present? && password.present?
+
     client = "#{type}::ClientService".classify.constantize.new(self)
     client.logout
   rescue Bank::AuthenticationError

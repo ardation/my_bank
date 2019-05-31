@@ -5,7 +5,7 @@ class BanksController < ApplicationController
   def index
     load_banks
     redirect_to bank_path(@banks.first) if @banks.count == 1
-    redirect_to new_bank_path if @banks.count == 0
+    redirect_to new_bank_path if @banks.empty?
   end
 
   def show
@@ -15,22 +15,25 @@ class BanksController < ApplicationController
 
   def new
     build_bank
+    breadcrumb 'New', new_bank_path
   end
 
   def create
     build_bank
-    save_bank || render('new')
+    save_bank || (new && render('new'))
   end
 
   def edit
     load_bank
     build_bank
+    breadcrumb bank.name, bank_path(bank)
+    breadcrumb 'Edit', edit_bank_path(bank)
   end
 
   def update
     load_bank
     build_bank
-    save_bank || render('edit')
+    save_bank || (edit && render('edit'))
   end
 
   def destroy
