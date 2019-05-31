@@ -86,7 +86,7 @@ ActiveRecord::Schema.define(version: 2019_05_26_032741) do
     t.string "remote_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["integration_id", "remote_id"], name: "index_integration_ynab_budgets_on_integration_id_and_remote_id", unique: true
+    t.index ["integration_id", "remote_id"], name: "idx_ynab_budget_ids", unique: true
     t.index ["integration_id"], name: "index_integration_ynab_budgets_on_integration_id"
   end
 

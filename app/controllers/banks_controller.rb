@@ -4,7 +4,8 @@ class BanksController < ApplicationController
 
   def index
     load_banks
-    # redirect_to bank_path(@banks.first) if @banks.count == 1
+    redirect_to bank_path(@banks.first) if @banks.count == 1
+    redirect_to new_bank_path if @banks.count == 0
   end
 
   def show

@@ -1,21 +1,30 @@
 class Bank < ApplicationRecord
+  class AuthenticationError < StandardError; end
+
+  TYPES = {
+    'ANZ' => 'Bank::Anz',
+    'ASB' => 'Bank::Asb'
+  }.freeze
+
   belongs_to :user
   has_many :accounts, dependent: :destroy
 
   attr_encrypted :username, key: [ENV.fetch('BANK_USERNAME_KEY')].pack('H*')
   attr_encrypted :password, key: [ENV.fetch('BANK_PASSWORD_KEY')].pack('H*')
 
-  validates :type, presence: true
+  validates :type, inclusion: { in: Bank::TYPES.values }, presence: true
+  validate :validate_credentials
 
   def pull
-    "#{self.class.name}::PullService".classify.constantize.pull(self)
-  rescue NameError
-    raise NoMethodError 'Bank base class does not implement pull'
+    "#{type}::PullService".classify.constantize.pull(self)
   end
 
-  def login
-    "#{self.class.name}::ClientService".classify.constantize.login(self)
-  rescue NameError
-    raise NoMethodError 'Bank base class does not implement pull'
+  protected
+
+  def validate_credentials
+    client = "#{type}::ClientService".classify.constantize.new(self)
+    client.logout
+  rescue Bank::AuthenticationError
+    errors.add(:username, 'or password invalid')
   end
 end
