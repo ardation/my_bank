@@ -1,5 +1,7 @@
 @import 'bootstrap/dist/css/bootstrap';
-
+body {
+  padding-top: 60px;
+}
 .budget-accounts {
   .bank-account {
     margin: 0;
@@ -10,4 +12,9 @@
   > div:last-child {
     border-bottom: 0 !important;
   }
+}
+.actions {
+  padding: 15px 20px;
+  background: #e9ecef;
+  text-align: right;
 }

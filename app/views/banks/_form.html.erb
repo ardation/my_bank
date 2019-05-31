@@ -1,6 +1,16 @@
 <%= simple_form_for @bank.becomes(Bank) do |f| %>
-  <%= f.input :username %>
-  <%= f.input :password %>
-  <%= f.input :type, collection: Bank::TYPES if @bank.new_record? %>
-  <%= f.submit class: 'btn btn-primary' %>
+  <div class="container">
+    <%= f.input :username %>
+    <%= f.input :password %>
+    <%= f.input :type, collection: Bank::TYPES if @bank.new_record? %>
+  </div>
+  <div class="actions">
+    <% if bank.persisted? %>
+    <div class="float-left">
+      <%= link_to 'Delete Bank Connection', bank_path(bank), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure?' } %>
+    </div>
+    <% end %>
+    <%= link_to 'Cancel', bank_path(bank), class: 'btn btn-link' if bank.persisted? %>
+    <%= f.submit class: 'btn btn-primary', value: 'Save Bank Connection', data: { 'disable-with' => 'Save Bank Connection' } %>
+  </div>
 <% end %>

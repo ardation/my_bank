@@ -5,6 +5,7 @@
 
 import '../stylesheets/application';
 import 'bootstrap/js/src/collapse';
+import 'bootstrap/js/src/util';
 
 require("@rails/ujs").start()
 require("turbolinks").start()

@@ -1,8 +1,7 @@
 namespace :sync do
-  desc 'sync all data from ANZ and YNAB'
+  desc 'sync all data with remote sources'
   task recent: :environment do
-    Anz::PullService.pull
-    Ynab::PullService.pull
-    Ynab::PushService.push
+    Bank.find_each(&:sync)
+    Integration.find_each(&:sync)
   end
 end

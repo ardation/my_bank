@@ -35,5 +35,6 @@ class Bank < ApplicationRecord
     client.logout
   rescue Bank::AuthenticationError
     errors.add(:username, 'or password invalid')
+    errors.add(:password, 'or username invalid')
   end
 end

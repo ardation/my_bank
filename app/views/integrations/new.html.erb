@@ -1,15 +1,28 @@
 <% @types.each do |service, type| %>
   <div class="row">
-    <div class="card col-3">
-      <%= image_pack_tag("integrations/#{service.downcase}.png", class: 'card-img-top p-3') %>
-      <div class="card-body border-top">
-        <p class="card-text">
-        <% if service == 'YNAB' %>
-          You Need a Budget combines easy software with Four Simple Rules to help you quickly gain control of your money, get out of debt, and save more money faster!
-        <% end %>
+    <div class="col-12 col-md-4 col-sm-6">
+      <div class="card">
+        <%= image_pack_tag("integrations/#{service.downcase}.png", class: 'card-img-top p-3') %>
+        <div class="card-body border-top">
+          <p class="card-text">
+          <% if service == 'YNAB' %>
+            You Need a Budget combines easy software with Four Simple Rules to help you quickly gain control of your money, get out of debt, and save more money faster!
+          <% end %>
+          </div>
+          <div class="border-top p-3">
+            <%= link_to "Add #{service} Integration", new_integration_path(service: service), class: 'btn btn-primary btn-block' %>
+          </div>
         </div>
-        <%= link_to "Add #{service} Integration", new_integration_path(service: service), class: 'btn btn-primary btn-block' %>
       </div>
     </div>
+  </div>
+<% end %>
+
+<% if @types.empty? %>
+  <div class="jumbotron mt-3">
+    <h1 class="display-5">No More Integrations.</h1>
+    <p class="lead">Looks like you've already added all the integrations we have at the moment.</p>
+    <hr class="my-4">
+    <p>We'll be sure to let you know when we add more.</p>
   </div>
 <% end %>

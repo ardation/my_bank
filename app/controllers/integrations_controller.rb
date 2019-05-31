@@ -20,7 +20,14 @@ class IntegrationsController < ApplicationController
     else
       active_types = integration_scope.pluck(:type)
       @types = Integration::TYPES.reject { |_k, v| active_types.include? v }
+      breadcrumb 'New', new_integration_path
     end
+  end
+
+  def destroy
+    load_integration
+    @integration.destroy
+    redirect_to integrations_path
   end
 
   protected

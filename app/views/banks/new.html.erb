@@ -1,2 +1,9 @@
-<h1>New Bank Connection</h1>
-<%= render 'form' %>
+<h1 class="m-0 px-3 pb-4 border-bottom border-primary">New Bank Connection</h1>
+<div class="mt-4">
+  <div class="alert alert-info">
+    My Bank requires your banking credentials to fetch your account and transaction information.
+    Your banking credentials are used strictly for this purpose and are encrypted before being stored.
+    You can remove any banking data from this system at any time.
+  </div>
+  <%= render 'form' %>
+</div>

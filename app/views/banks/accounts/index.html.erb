@@ -1,4 +1,14 @@
-<h1 class="m-0 px-3 pb-4 border-bottom border-primary"><%= image_pack_tag("banks/#{bank.name.underscore}.png", style: 'height: 50px')%></h1>
+<div class="m-0 px-3 pb-4 border-bottom border-primary d-flex align-items-center">
+  <div class="flex-grow-1">
+    <%= image_pack_tag("banks/#{bank.name.underscore}.png", style: 'height: 50px') %>
+    <br>
+    <small class="text-muted"><%= bank.username %></small>
+  </div>
+  <div>
+    <%= link_to 'New Bank Connection', new_bank_path, class: 'btn btn-outline-secondary' %>
+    <%= link_to 'Edit Bank Connection', edit_bank_path(bank), class: 'btn btn-secondary' %>
+  </div>
+</div>
 <% if accounts.present? %>
   <% accounts.each do |account| %>
     <div class="container">

@@ -5,7 +5,15 @@
   options
 end
 %>
-<h1 class="m-0 px-3 pb-4 border-bottom border-primary"><%= image_pack_tag("integrations/ynab.png", style: 'height: 50px')%></h1>
+<div class="m-0 px-3 pb-4 border-bottom border-primary d-flex align-items-center">
+  <div class="flex-grow-1">
+    <%= image_pack_tag("integrations/ynab.png", style: 'height: 50px') %>
+  </div>
+  <div>
+      <%= link_to 'New Integration', new_integration_path, class: 'btn btn-outline-secondary' %>
+      <%= link_to 'Delete Integration', integration_path(integration), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure?' } %>
+  </div>
+</div>
 <div class="container">
   <% integration.budgets.each do |budget| %>
     <div class="row py-3 border-bottom">
@@ -49,12 +57,12 @@ end
       </div>
     </div>
   <% end %>
-  <% if integration.budgets.empty? %>
-    <div class="jumbotron mt-3">
-      <h1 class="display-5">No Budgets Synced.</h1>
-      <p class="lead">Looks like you don't have any budgets setup yet. You'll need to go to <a href="https://youneedabudget.com">YNAB</a> to set these up.</p>
-      <hr class="my-4">
-      <p>It may take up to ten minutes for My Bank to sync with YNAB before they will show up here so hold tight!</p>
-    </div>
-  <% end %>
 </div>
+<% if integration.budgets.empty? %>
+  <div class="jumbotron mt-3">
+    <h1 class="display-5">No Budgets Synced.</h1>
+    <p class="lead">Looks like you don't have any budgets setup yet. You'll need to go to <a href="https://youneedabudget.com">YNAB</a> to set these up.</p>
+    <hr class="my-4">
+    <p>It may take up to ten minutes for My Bank to sync with YNAB before they will show up here so hold tight!</p>
+  </div>
+<% end %>

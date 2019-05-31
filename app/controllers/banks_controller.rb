@@ -39,6 +39,7 @@ class BanksController < ApplicationController
   def destroy
     load_bank
     @bank.destroy
+    redirect_to banks_path
   end
 
   protected
