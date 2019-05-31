@@ -24,7 +24,7 @@ class Bank::Anz::ClientService
 
   protected
 
-  def transactions(account_id, start_date = Time.zone.today.beginning_of_month, end_date = Time.zone.today)
+  def transactions(account_id, start_date = (Time.zone.today - 1.month).beginning_of_month, end_date = Time.zone.today)
     response = client.post(
       'https://secure.anz.co.nz/IBCS/service/account/export-transactions',
       transaction_query(account_id, start_date, end_date).to_json,

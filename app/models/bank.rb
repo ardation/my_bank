@@ -16,7 +16,13 @@ class Bank < ApplicationRecord
   validates :username, :password, presence: true
   validate :validate_credentials
 
+  def sync
+    pull
+  end
+
   def pull
+    return unless Bank::TYPES.values.include?(type)
+
     "#{type}::PullService".classify.constantize.pull(self)
   end
 

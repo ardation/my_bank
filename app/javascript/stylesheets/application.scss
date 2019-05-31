@@ -1,1 +1,13 @@
 @import 'bootstrap/dist/css/bootstrap';
+
+.budget-accounts {
+  .bank-account {
+    margin: 0;
+    .col {
+      padding: 0;
+    }
+  }
+  > div:last-child {
+    border-bottom: 0 !important;
+  }
+}

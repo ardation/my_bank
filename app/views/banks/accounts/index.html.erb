@@ -1,10 +1,20 @@
 <h1 class="m-0 px-3 pb-4 border-bottom border-primary"><%= image_pack_tag("banks/#{bank.name.underscore}.png", style: 'height: 50px')%></h1>
-<% accounts.each do |account| %>
-  <div class="container">
-    <%= render partial: 'banks/accounts/account', locals: { account: account }  %>
+<% if accounts.present? %>
+  <% accounts.each do |account| %>
+    <div class="container">
+      <%= render partial: 'banks/accounts/account', locals: { account: account }  %>
+    </div>
+  <% end %>
+  <div class="py-4 border-top border-primary text-center">
+    <div class="d-flex justify-content-center"><%= paginate accounts, theme: 'twitter-bootstrap-4' %></div>
+    <div><%= page_entries_info accounts %></div>
   </div>
 <% end %>
-<div class="py-4 border-top border-primary text-center">
-  <div class="d-flex justify-content-center"><%= paginate accounts, theme: 'twitter-bootstrap-4' %></div>
-  <div><%= page_entries_info accounts %></div>
-</div>
+<% if accounts.empty? %>
+  <div class="jumbotron mt-3">
+    <h1 class="display-5">No Accounts Synced.</h1>
+    <p class="lead">Looks like you don't have any accounts setup yet.</p>
+    <hr class="my-4">
+    <p>It may take up to ten minutes for My Bank to sync with <%= bank.name %> before they will show up here so please be patient!</p>
+  </div>
+<% end %>

@@ -10,6 +10,11 @@ class Integration < ApplicationRecord
 
   validates :type, inclusion: { in: Integration::TYPES.values }, presence: true
 
+  def sync
+    pull
+    push
+  end
+
   def pull
     return unless Integration::TYPES.values.include?(type)
 

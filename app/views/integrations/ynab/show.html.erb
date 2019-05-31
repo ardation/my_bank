@@ -9,12 +9,13 @@ end
 <div class="container">
   <% integration.budgets.each do |budget| %>
     <div class="row py-3 border-bottom">
-      <div class="col">
-        <h4 class="mb-0"><%= budget.name %></h5>
+      <div class="col ">
+        <h4 class="mb-0"><%= budget.name %></h4>
+        <small class="text-muted">Budget</small>
       </div>
     </div>
-    <div class="row pl-3 border-bottom">
-      <div class="col">
+    <div class="row border-bottom">
+      <div class="col budget-accounts">
         <% budget.accounts.each do |budget_account| %>
           <div class="border-bottom">
             <h5 class="d-flex align-items-center py-3 mb-0">
@@ -25,23 +26,35 @@ end
             </h5>
             <% budget_account.links.each do |link| %>
               <%= render partial: 'banks/accounts/account', locals: { account: link.bank_account }  %>
-              <%= link_to 'Disconnect Account', integration_ynab_budget_account_link_path(integration, budget, budget_account, link), method: :delete, class: 'btn btn-danger btn-sm' %>
+              <div class="py-2">
+                <%= link_to 'Disconnect Account', integration_ynab_budget_account_link_path(integration, budget, budget_account, link), method: :delete, class: 'btn btn-danger btn-sm' %>
+              </div>
             <% end %>
-            <div class="collapse" id="budget-account-list-form-<%= budget_account.id %>">
-              <%= simple_form_for budget_account.object.links.build, url: integration_ynab_budget_account_links_path(integration, budget, budget_account) do |f| %>
-                <div class="row">
-                  <div class="col-12 col-md-9">
-                    <%= f.input :bank_account_id, as: :grouped_select, collection: @grouped_options, group_method: :last, label: false %>
+            <div class="collapse border-top" id="budget-account-list-form-<%= budget_account.id %>">
+              <div class="pt-3">
+                <%= simple_form_for budget_account.object.links.build, url: integration_ynab_budget_account_links_path(integration, budget, budget_account) do |f| %>
+                  <div class="row">
+                    <div class="col-12 col-md-9">
+                      <%= f.input :bank_account_id, as: :grouped_select, collection: @grouped_options, group_method: :last, label: false %>
+                    </div>
+                    <div class="col-12 col-md-3">
+                      <%= f.submit "Add Account to #{budget_account.name}", class: 'btn btn-outline-secondary btn-block text-center' %>
+                    </div>
                   </div>
-                  <div class="col-12 col-md-3">
-                    <%= f.submit "Add Account to #{budget_account.name}", class: 'btn btn-outline-secondary btn-block text-center' %>
-                  </div>
-                </div>
-              <% end %>
+                <% end %>
+              </div>
             </div>
           </div>
         <% end %>
       </div>
+    </div>
+  <% end %>
+  <% if integration.budgets.empty? %>
+    <div class="jumbotron mt-3">
+      <h1 class="display-5">No Budgets Synced.</h1>
+      <p class="lead">Looks like you don't have any budgets setup yet. You'll need to go to <a href="https://youneedabudget.com">YNAB</a> to set these up.</p>
+      <hr class="my-4">
+      <p>It may take up to ten minutes for My Bank to sync with YNAB before they will show up here so hold tight!</p>
     </div>
   <% end %>
 </div>
