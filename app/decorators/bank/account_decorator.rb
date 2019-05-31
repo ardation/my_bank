@@ -1,4 +1,10 @@
 class Bank::AccountDecorator < ApplicationDecorator
+  decorates_association :bank
+
+  def category_name
+    "#{bank.service} (#{bank.username})"
+  end
+
   def name
     object.nickname || object.name
   end

@@ -4,7 +4,7 @@
 // that code so it'll be compiled.
 
 import '../stylesheets/application';
-import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap/js/src/collapse';
 
 require("@rails/ujs").start()
 require("turbolinks").start()

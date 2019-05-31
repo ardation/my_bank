@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_26_032741) do
+ActiveRecord::Schema.define(version: 2019_05_31_075802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -70,6 +70,16 @@ ActiveRecord::Schema.define(version: 2019_05_26_032741) do
     t.index ["user_id"], name: "index_banks_on_user_id"
   end
 
+  create_table "integration_ynab_budget_account_links", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "bank_account_id", null: false
+    t.uuid "budget_account_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["bank_account_id", "budget_account_id"], name: "idx_ynab_budget_account_link_uniq_ids", unique: true
+    t.index ["bank_account_id"], name: "idx_ynab_budget_account_link_bank"
+    t.index ["budget_account_id"], name: "idx_ynab_budget_account_link_budget"
+  end
+
   create_table "integration_ynab_budget_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "remote_id"
@@ -100,6 +110,7 @@ ActiveRecord::Schema.define(version: 2019_05_26_032741) do
     t.text "extra"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id", "type"], name: "index_integrations_on_user_id_and_type", unique: true
     t.index ["user_id"], name: "index_integrations_on_user_id"
   end
 
@@ -132,6 +143,8 @@ ActiveRecord::Schema.define(version: 2019_05_26_032741) do
   add_foreign_key "bank_account_transactions", "bank_accounts", column: "account_id", on_delete: :cascade
   add_foreign_key "bank_accounts", "banks", on_delete: :cascade
   add_foreign_key "banks", "users", on_delete: :cascade
+  add_foreign_key "integration_ynab_budget_account_links", "bank_accounts", name: "idx_ynab_budget_account_link_bank_fk", on_delete: :cascade
+  add_foreign_key "integration_ynab_budget_account_links", "integration_ynab_budget_accounts", column: "budget_account_id", name: "idx_ynab_budget_account_link_budget_fk", on_delete: :cascade
   add_foreign_key "integration_ynab_budget_accounts", "integration_ynab_budgets", column: "budget_id", on_delete: :cascade
   add_foreign_key "integration_ynab_budgets", "integrations", on_delete: :cascade
   add_foreign_key "integrations", "users", on_delete: :cascade

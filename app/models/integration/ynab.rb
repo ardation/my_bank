@@ -1,5 +1,9 @@
 class Integration::Ynab < Integration
-  has_many :budgets, class_name: 'Integration::Ynab::Budget', dependent: :destroy, foreign_key: 'integration_id'
+  has_many :budgets,
+           class_name: 'Integration::Ynab::Budget',
+           dependent: :destroy,
+           foreign_key: 'integration_id',
+           inverse_of: :integration
 
   def access_token
     return credentials['token'] if Time.now.in_time_zone < Time.at(credentials['expires_at']).in_time_zone
@@ -11,6 +15,7 @@ class Integration::Ynab < Integration
 
   def update_refresh_token
     response = refresh_token_request
+    binding.pry
     update(credentials: {
              'token' => response['access_token'],
              'refresh_token' => response['refresh_token'],

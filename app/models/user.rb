@@ -3,6 +3,7 @@ class User < ApplicationRecord
          :confirmable, :lockable, :timeoutable, :trackable, :registerable
 
   has_many :banks, dependent: :destroy
+  has_many :bank_accounts, through: :banks, source: :accounts, class_name: 'Bank::Account'
   has_many :integrations, dependent: :destroy
 
   def add_integration(provider, auth)
@@ -12,5 +13,7 @@ class User < ApplicationRecord
     )
     integration.attributes = auth
     integration.save
+
+    integration
   end
 end

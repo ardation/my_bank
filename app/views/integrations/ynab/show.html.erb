@@ -1,0 +1,47 @@
+<%
+@grouped_options = current_user.bank_accounts.includes(:bank).decorate.inject({}) do |options, bank_account|
+  options[bank_account.category_name] ||= []
+  options[bank_account.category_name] << [bank_account.name, bank_account.id]
+  options
+end
+%>
+<h1 class="m-0 px-3 pb-4 border-bottom border-primary"><%= image_pack_tag("integrations/ynab.png", style: 'height: 50px')%></h1>
+<div class="container">
+  <% integration.budgets.each do |budget| %>
+    <div class="row py-3 border-bottom">
+      <div class="col">
+        <h4 class="mb-0"><%= budget.name %></h5>
+      </div>
+    </div>
+    <div class="row pl-3 border-bottom">
+      <div class="col">
+        <% budget.accounts.each do |budget_account| %>
+          <div class="border-bottom">
+            <h5 class="d-flex align-items-center py-3 mb-0">
+              <div class="flex-grow-1"><%= budget_account.name %></div>
+              <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#budget-account-list-form-<%= budget_account.id %>" aria-expanded="false" aria-controls="budget-account-list-form-<%= budget_account.id %>">
+                Add Bank Account
+              </button>
+            </h5>
+            <% budget_account.links.each do |link| %>
+              <%= render partial: 'banks/accounts/account', locals: { account: link.bank_account }  %>
+              <%= link_to 'Disconnect Account', integration_ynab_budget_account_link_path(integration, budget, budget_account, link), method: :delete, class: 'btn btn-danger btn-sm' %>
+            <% end %>
+            <div class="collapse" id="budget-account-list-form-<%= budget_account.id %>">
+              <%= simple_form_for budget_account.object.links.build, url: integration_ynab_budget_account_links_path(integration, budget, budget_account) do |f| %>
+                <div class="row">
+                  <div class="col-12 col-md-9">
+                    <%= f.input :bank_account_id, as: :grouped_select, collection: @grouped_options, group_method: :last, label: false %>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <%= f.submit "Add Account to #{budget_account.name}", class: 'btn btn-outline-secondary btn-block text-center' %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

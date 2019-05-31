@@ -9,12 +9,12 @@ class Integration::Ynab::PushService
     @client ||= Integration::Ynab::ClientService.new(integration)
   end
 
-  def self.push
-    instance = new
-    instance.push_transactions
+  def self.push(integration)
+    instance = new(integration)
+    instance.push
   end
 
-  def push_transactions
+  def push
     integration.budgets.find_each do |budget|
       budget.accounts.find_each do |budget_account|
         transactions = budget_account.transactions
@@ -31,10 +31,11 @@ class Integration::Ynab::PushService
     transactions.map do |transaction|
       {
         account_id: account_id,
-        date: transaction.date.strftime,
+        date: transaction.posted_at.strftime('%Y-%m-%d'),
         amount: (transaction.amount * 1000).to_i,
-        payee_name: transaction.payee_name,
-        memo: transaction.memo
+        payee_name: transaction.name,
+        memo: transaction.memo,
+        import_id: transaction.id
       }
     end
   end

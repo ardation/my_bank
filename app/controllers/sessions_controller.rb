@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
   def create
-    current_user&.add_integration(auth_hash['provider'], auth_hash)
-    redirect_to '/'
+    integration = current_user&.add_integration(auth_hash['provider'], auth_hash)
+    redirect_to integration_path(integration)
   end
 
   protected

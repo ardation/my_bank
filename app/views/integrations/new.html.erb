@@ -1,0 +1,15 @@
+<% @types.each do |service, type| %>
+  <div class="row">
+    <div class="card col-3">
+      <%= image_pack_tag("integrations/#{service.downcase}.png", class: 'card-img-top p-3') %>
+      <div class="card-body border-top">
+        <p class="card-text">
+        <% if service == 'YNAB' %>
+          You Need a Budget combines easy software with Four Simple Rules to help you quickly gain control of your money, get out of debt, and save more money faster!
+        <% end %>
+        </div>
+        <%= link_to "Add #{service} Integration", new_integration_path(service: service), class: 'btn btn-primary btn-block' %>
+      </div>
+    </div>
+  </div>
+<% end %>
