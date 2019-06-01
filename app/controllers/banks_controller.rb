@@ -1,4 +1,5 @@
 class BanksController < ApplicationController
+  before_action :authenticate_user!
   decorates_assigned :banks, :bank
   breadcrumb 'Banks', :banks_path
 
@@ -40,6 +41,7 @@ class BanksController < ApplicationController
     load_bank
     @bank.destroy
     redirect_to banks_path
+    flash[:warning] = 'Bank Connection deleted successfully.'
   end
 
   protected
@@ -58,7 +60,11 @@ class BanksController < ApplicationController
   end
 
   def save_bank
-    redirect_to bank_path(@bank) if @bank.save
+    return false unless @bank.save
+
+    redirect_to bank_path(@bank)
+    flash[:success] = 'Bank Connection saved successfully. Please allow 10 minutes for My Bank to sync your data.'
+    true
   end
 
   def bank_params

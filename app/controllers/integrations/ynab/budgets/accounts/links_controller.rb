@@ -12,6 +12,7 @@ class Integrations::Ynab::Budgets::Accounts::LinksController < Integrations::Yna
     load_link
     @link.destroy
     redirect_to integration_path(@link.integration)
+    flash[:warning] = 'Bank to Budget Link disconnected successfully.'
   end
 
   protected
@@ -26,7 +27,11 @@ class Integrations::Ynab::Budgets::Accounts::LinksController < Integrations::Yna
   end
 
   def save_link
-    redirect_to integration_path(@link.integration) if @link.save
+    return false unless @link.save
+
+    redirect_to integration_path(@link.integration)
+    flash[:success] = 'Bank to Budget Link added successfully. Please allow 10 minutes for My Bank to sync your data.'
+    true
   end
 
   def link_params

@@ -1,4 +1,5 @@
 class IntegrationsController < ApplicationController
+  before_action :authenticate_user!
   decorates_assigned :integrations, :integration
   breadcrumb 'Integrations', :integrations_path
 
@@ -28,6 +29,7 @@ class IntegrationsController < ApplicationController
     load_integration
     @integration.destroy
     redirect_to integrations_path
+    flash[:warning] = 'Integration deleted successfully.'
   end
 
   protected

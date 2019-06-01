@@ -13,10 +13,13 @@
   <body>
     <%= render 'navigation' %>
     <section class="page">
-      <%= render 'breadcrumbs' %>
       <div class="container">
-        <%= render 'flash' %>
-        <%= yield %>
+        <div class="row">
+          <div class="col-12 col-md-6 offset-md-3">
+          <%= render 'flash' %>
+          <%= yield %>
+          </div>
+        </div>
       </div>
     </section>
     <%= render 'footer' %>

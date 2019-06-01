@@ -1,6 +1,17 @@
 @import 'bootstrap/dist/css/bootstrap';
 body {
   padding-top: 60px;
+  font-family: 'Karla', sans-serif;
+  color: #576d96;
+  background-color: #f8f9fa;
+}
+section.page {
+  background-color: #fff;
+  padding: 25px 0;
+}
+.breadcrumb {
+  background-color: #fff;
+  padding: 0.75rem 0;
 }
 .budget-accounts {
   .bank-account {
@@ -15,6 +26,15 @@ body {
 }
 .actions {
   padding: 15px 20px;
-  background: #e9ecef;
+  background: #f8f9fa;
   text-align: right;
+}
+footer {
+  padding: 50px 0;
+  a {
+    padding-left: 20px;
+    &:first-child {
+      padding-left: 0;
+    }
+  }
 }

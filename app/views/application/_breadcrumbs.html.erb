@@ -1,6 +1,7 @@
-<div class="container py-3">
+<% if breadcrumb_trail.count > 1 %>
+<div class="container pb-3">
   <nav aria-label="breadcrumb">
-    <ol class='breadcrumb mb-0'>
+    <ol class='breadcrumb pt-0 pb-3 mb-0 border-bottom'>
       <% breadcrumb_trail do |crumb| %>
         <li class="breadcrumb-item<%= current_page?(crumb.url) ? ' active' : '' %>">
           <%= link_to_unless current_page?(crumb.url), crumb.name, crumb.url, (current_page?(crumb.url) ? {'aria-current' => 'page'} : {}) %>
@@ -9,3 +10,4 @@
     </ol>
   </nav>
 </div>
+<% end %>

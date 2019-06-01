@@ -1,9 +1,11 @@
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!, unless: :devise_controller?
+  layout :layout_by_resource
   protect_from_forgery prepend: true
   breadcrumb 'Home', :root
 
-  def index
-    redirect_to banks_path
+  private
+
+  def layout_by_resource
+    devise_controller? ? 'devise' : 'application'
   end
 end
