@@ -1,19 +1,24 @@
 <div class="jumbotron">
-  <h1 class="display-4">My Bank!</h1>
-  <p class="lead">My Bank exists to help you free your data from your banks and make it easy to share that data with the tools you love.</p>
+  <h1 class="display-4">My Bank</h1>
+  <p class="lead">My Bank exists to help you free your data from your bank and share it with the tools you love.</p>
   <p class="lead">
+    <% if user_signed_in? %>
     <a class="btn btn-primary btn-lg" href="<%= banks_path %>" role="button">Get Started</a>
+    <% else %>
+    <a class="btn btn-primary btn-lg" href="<%= new_user_registration_path %>" role="button">Sign Up</a>
+    <% end %>
   </p>
 </div>
 <div class="row">
   <div class="col">
     <h5>Supported Banks</h5>
     <hr>
-    <%= link_to image_pack_tag("banks/anz.png", style: 'height: 50px'), 'https://anz.co.nz', target: '_blank' %>
+    <%= link_to image_pack_tag("banks/asb.png", style: 'height: 30px', class: 'mr-2'), 'https://asb.co.nz', target: '_blank' %>
+    <%= link_to image_pack_tag("banks/anz.png", style: 'height: 30px'), 'https://anz.co.nz', target: '_blank' %>
   </div>
   <div class="col">
     <h5>Supported Tools</h5>
     <hr>
-    <%= link_to image_pack_tag("integrations/ynab.png", style: 'height: 50px'), 'https://youneedabudget.com', target: '_blank' %>
+    <%= link_to image_pack_tag("integrations/ynab.png", style: 'height: 30px'), 'https://youneedabudget.com', target: '_blank' %>
   </div>
 </div>
