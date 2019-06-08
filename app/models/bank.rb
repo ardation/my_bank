@@ -31,7 +31,6 @@ class Bank < ApplicationRecord
   def validate_credentials
     return false unless Bank::TYPES.values.include?(type) && username.present? && password.present?
 
-    binding.pry
     client = "#{type}::ClientService".classify.constantize.new(self)
     client.logout
   rescue Bank::AuthenticationError
