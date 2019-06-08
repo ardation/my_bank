@@ -16,6 +16,8 @@ class Bank < ApplicationRecord
   validates :username, :password, presence: true
   validate :validate_credentials
 
+  serialize :session, JSON
+
   def sync
     pull
   end

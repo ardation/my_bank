@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_31_075802) do
+ActiveRecord::Schema.define(version: 2019_06_08_104134) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 2019_05_31_075802) do
     t.uuid "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "session"
     t.index ["encrypted_password_iv"], name: "index_banks_on_encrypted_password_iv", unique: true
     t.index ["encrypted_username_iv"], name: "index_banks_on_encrypted_username_iv", unique: true
     t.index ["user_id"], name: "index_banks_on_user_id"

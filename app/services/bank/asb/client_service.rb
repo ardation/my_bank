@@ -28,21 +28,29 @@ class Bank::Asb::ClientService
   def client
     return @client if @client
 
-    @client = Watir::Browser.new :chrome, headless: true, options: { args: ['window-size=1920,1080'] }
+    @client = Watir::Browser.new :chrome, options: { args: ['window-size=1920,1080'] }, headless: true
 
     bridge = @client.driver.send :bridge
     path = "/session/#{bridge.session_id}/chromium/send_command"
     params = { behavior: 'allow', downloadPath: download_directory.to_s }
     bridge.http.call(:post, path, cmd: 'Page.setDownloadBehavior', params: params)
 
+    @client.goto('https://online.asb.co.nz/')
+    @client.cookies.clear
+    bank.session&.each do |cookie|
+      @client.cookies.add cookie['name'], cookie['value'], cookie.except('name', 'value')
+    end
     @client
   end
 
   def login
-    client.goto('https://online.asb.co.nz/auth/')
+    client.goto('https://online.asb.co.nz/fnc/')
+    return if client.title == 'ASB FastNet: Balances'
+
     client.text_field(id: 'dUsername').set bank.username
     client.text_field(id: 'password').set bank.password
     client.button(id: 'loginBtn').click
+    bank.update_attribute(:session, client.cookies.to_a)
   rescue StandardError
     raise Bank::AuthenticationError
   end
@@ -73,4 +81,6 @@ class Bank::Asb::ClientService
     end
     nil
   end
+
+  def complete_recaptcha; end
 end
