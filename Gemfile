@@ -26,6 +26,7 @@ gem 'turbolinks', '~> 5'
 gem 'webpacker', '~> 4.0'
 gem 'simple_form'
 gem 'high_voltage'
+gem 'watir'
 
 group :development do
   gem 'foreman'
@@ -38,6 +39,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'webdrivers'
   gem 'dotenv-rails'
   gem 'hirb'
   gem 'hirb-unicode-steakknife', require: 'hirb-unicode'
