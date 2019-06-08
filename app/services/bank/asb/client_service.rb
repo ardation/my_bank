@@ -43,7 +43,6 @@ class Bank::Asb::ClientService
     client.text_field(id: 'dUsername').set bank.username
     client.text_field(id: 'password').set bank.password
     client.button(id: 'loginBtn').click
-    binding.pry
   rescue StandardError
     raise Bank::AuthenticationError
   end
