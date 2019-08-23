@@ -18,14 +18,10 @@ class Bank < ApplicationRecord
 
   serialize :session, JSON
 
-  def sync
-    pull
-  end
-
-  def pull
+  def sync(start_date = (Time.zone.today - 1.month).beginning_of_month, end_date = Time.zone.today)
     return unless Bank::TYPES.values.include?(type)
 
-    "#{type}::PullService".classify.constantize.pull(self)
+    "#{type}::PullService".classify.constantize.pull(self, start_date, end_date)
   end
 
   protected

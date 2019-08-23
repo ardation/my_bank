@@ -12,4 +12,11 @@ namespace :sync do
       Rails.logger.error [e.message, *e.backtrace].join($INPUT_RECORD_SEPARATOR)
     end
   end
+  task bank_last_two_years: :environment do
+    Bank.find_each do |bank|
+      bank.sync(2.years.ago)
+    rescue StandardError => e
+      Rails.logger.error [e.message, *e.backtrace].join($INPUT_RECORD_SEPARATOR)
+    end
+  end
 end

@@ -9,7 +9,7 @@ class Bank::Asb::PullService
     @client ||= Bank::Asb::ClientService.new(bank)
   end
 
-  def self.pull(bank)
+  def self.pull(bank, _start_date, _end_date)
     instance = new(bank)
     instance.pull_accounts
   ensure

@@ -9,23 +9,25 @@ class Bank::Anz::PullService
     @client ||= Bank::Anz::ClientService.new(bank)
   end
 
-  def self.pull(bank)
+  def self.pull(bank, start_date, end_date)
     instance = new(bank)
-    instance.pull_accounts
+    instance.pull_accounts(start_date, end_date)
   ensure
     instance.client.logout
   end
 
-  def pull_accounts
-    client.accounts.each do |remote_account|
-      account = bank.accounts.find_or_initialize_by(remote_id: remote_account[:anz_account]['accountNumber'])
-      account.attributes = account_attributes(remote_account[:anz_account], remote_account[:ofx_account])
-      account.save
-      pull_transactions(account, remote_account[:ofx_account].transactions) if remote_account[:ofx_account]
-    end
+  def pull_accounts(start_date, end_date)
+    client.accounts(start_date, end_date).each(&method(:pull_remote_account))
   end
 
   protected
+
+  def pull_remote_account(remote_account)
+    account = bank.accounts.find_or_initialize_by(remote_id: remote_account[:anz_account]['accountNumber'])
+    account.attributes = account_attributes(remote_account[:anz_account], remote_account[:ofx_account])
+    account.save
+    pull_transactions(account, remote_account[:ofx_account].transactions) if remote_account[:ofx_account]
+  end
 
   def pull_transactions(account, remote_transactions)
     remote_transactions.each do |remote_transaction|

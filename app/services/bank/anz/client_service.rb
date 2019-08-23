@@ -6,11 +6,11 @@ class Bank::Anz::ClientService
     login
   end
 
-  def accounts
+  def accounts(start_date, end_date)
     response = client.get("https://secure.anz.co.nz/IBCS/service/api/customers/#{customer_id}")
     JSON.parse(response.body)['accounts'].map do |remote_account|
       begin
-        ofx_account = transactions(remote_account['id']).account
+        ofx_account = transactions(remote_account['id'], start_date, end_date).account
       rescue StandardError
         Rails.logger.info('no transactions found')
       end
@@ -24,7 +24,7 @@ class Bank::Anz::ClientService
 
   protected
 
-  def transactions(account_id, start_date = (Time.zone.today - 1.month).beginning_of_month, end_date = Time.zone.today)
+  def transactions(account_id, start_date, end_date)
     response = client.post(
       'https://secure.anz.co.nz/IBCS/service/account/export-transactions',
       transaction_query(account_id, start_date, end_date).to_json,
