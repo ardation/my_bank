@@ -3,7 +3,7 @@ services:
   db:
     image: 'postgres:12-alpine'
     volumes:
-      - 'my_bank_db:/var/lib/postgresql/data'
+      - 'db:/var/lib/postgresql/data'
     restart: always
     ports:
       - 5432
@@ -11,7 +11,7 @@ services:
     image: 'redis:5-alpine'
     command: redis-server
     volumes:
-      - 'my_bank_redis:/data'
+      - 'redis:/data'
     restart: always
     ports:
       - 6379
@@ -39,5 +39,5 @@ services:
     command: bundle exec sidekiq
     ports: []
 volumes:
-  my_bank_redis:
-  my_bank_db:
+  redis:
+  db:
