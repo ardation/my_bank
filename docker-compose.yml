@@ -5,12 +5,16 @@ services:
     volumes:
       - 'my_bank_db:/var/lib/postgresql/data'
     restart: always
+    ports:
+      - 5432
   redis:
     image: 'redis:5-alpine'
     command: redis-server
     volumes:
       - 'my_bank_redis:/data'
     restart: always
+    ports:
+      - 6379
   app: &app_base
     image: 'ardation/my_bank:latest'
     build:
