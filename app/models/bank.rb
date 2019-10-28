@@ -16,6 +16,8 @@ class Bank < ApplicationRecord
   validates :username, :password, presence: true
   validate :validate_credentials
 
+  after_commit :perform_sync, on: %i[create update]
+
   serialize :session, JSON
 
   def sync(start_date = (Time.zone.today - 1.month).beginning_of_month, end_date = Time.zone.today)
@@ -25,6 +27,10 @@ class Bank < ApplicationRecord
   end
 
   protected
+
+  def perform_sync
+    Bank::SyncJob.perform_later(self)
+  end
 
   def validate_credentials
     return false unless Bank::TYPES.values.include?(type) && username.present? && password.present?

@@ -4,6 +4,8 @@ class Integration < ApplicationRecord
   serialize :credentials, Hash
   serialize :extra, Hash
 
+  after_commit :perform_sync, on: %i[create update]
+
   TYPES = {
     'YNAB' => 'Integration::Ynab'
   }.freeze
@@ -25,5 +27,11 @@ class Integration < ApplicationRecord
     return unless Integration::TYPES.values.include?(type)
 
     "#{type}::PushService".classify.constantize.push(self)
+  end
+
+  protected
+
+  def perform_sync
+    Integration::SyncJob.perform_later(self)
   end
 end
