@@ -55,7 +55,9 @@ RUN apk add --update --no-cache \
     $ADDITIONAL_PACKAGES \
     tzdata \
     file \
-    netcat-openbsd
+    netcat-openbsd \
+    chromium-chromedriver \
+    chromium
 
 # Add user
 RUN addgroup -g 1000 -S app \
@@ -69,6 +71,8 @@ COPY --from=Builder --chown=app:app /app /app
 # Set Rails env
 ENV RAILS_LOG_TO_STDOUT true
 ENV RAILS_SERVE_STATIC_FILES true
+ENV CHROME_BIN /usr/bin/chromium-browser
+ENV CHROME_PATH /usr/lib/chromium/
 
 WORKDIR /app
 

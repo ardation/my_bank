@@ -1,6 +1,6 @@
 class User < ApplicationRecord
-  devise :database_authenticatable, :recoverable, :rememberable, :validatable,
-         :confirmable, :lockable, :timeoutable, :trackable, :registerable
+  devise :database_authenticatable, :recoverable, :rememberable, :validatable, :lockable, :timeoutable,
+         :trackable, :registerable
 
   has_many :banks, dependent: :destroy
   has_many :bank_accounts, through: :banks, source: :accounts, class_name: 'Bank::Account'

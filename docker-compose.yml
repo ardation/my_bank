@@ -27,17 +27,18 @@ services:
     environment:
       - DB_HOST=db
       - RAILS_ENV=production
-      - REDIS_SIDEKIQ_URL=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
     links:
       - db
       - redis
-    ports:
-      - 3000
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "curl http://localhost:3000 || exit 1"]
       interval: 5m
       start_period: 1m
+    ports:
+      - '3000:3000'
   worker:
     <<: *app_base
     command: bundle exec sidekiq
@@ -45,6 +46,7 @@ services:
       test: "ps ax | grep -v grep | grep sidekiq"
       interval: 1m
       start_period: 1m
+    ports: []
 volumes:
   redis:
   db:
