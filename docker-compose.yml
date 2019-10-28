@@ -1,11 +1,9 @@
 version: '2.4'
 services:
-  postgres:
+  db:
     image: 'postgres:12-alpine'
     volumes:
-      - 'postgres:/var/lib/postgresql/data'
-    ports:
-      - 5432
+      - 'db:/var/lib/postgresql/data'
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -26,8 +24,12 @@ services:
         - FOLDERS_TO_REMOVE=spec node_modules vendor/assets lib/assets tmp/cache
         - BUNDLE_WITHOUT=development:test
         - RAILS_ENV=production
+    environment:
+      - DB_HOST=db
+      - RAILS_ENV=production
+      - REDIS_SIDEKIQ_URL=redis://redis:6379/0
     links:
-      - postgres
+      - db
       - redis
     ports:
       - 3000
@@ -45,4 +47,4 @@ services:
       start_period: 1m
 volumes:
   redis:
-  postgres:
+  db:
