@@ -17,7 +17,7 @@ services:
       - 'redis:/data'
     restart: always
   app: &app_base
-    image: my_bank
+    image: 'ardation/my_bank:latest'
     build:
       context: .
       args:
