@@ -26,8 +26,8 @@ class Integration::Ynab < Integration
 
   def refresh_token_request
     query = {
-      client_id: ENV.fetch('YNAB_ID'),
-      client_secret: ENV.fetch('YNAB_SECRET'),
+      client_id: Rails.application.credentials.ynab[:id],
+      client_secret: Rails.application.credentials.ynab[:secret],
       grant_type: 'refresh_token',
       refresh_token: credentials['refresh_token']
     }

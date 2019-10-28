@@ -1,24 +1,18 @@
+inherit_from: .rubocop_todo.yml
+require: rubocop-rails
 AllCops:
   Exclude:
     - 'bin/**/*'
     - 'db/**/*'
     - 'node_modules/**/*'
     - '.pryrc'
-
-Rails:
-  Enabled: true
-
-FrozenStringLiteralComment:
+Style/FrozenStringLiteralComment:
   Enabled: false
-
 Metrics/LineLength:
   Max: 120
-
 Style/ClassAndModuleChildren:
   Enabled: false
-
 Style/Documentation:
   Enabled: false
-
 Naming/MemoizedInstanceVariableName:
   Enabled: false

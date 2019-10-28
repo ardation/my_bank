@@ -1,3 +1,3 @@
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :ynab, ENV.fetch('YNAB_ID'), ENV.fetch('YNAB_SECRET')
+  provider :ynab, Rails.application.credentials.ynab[:id], Rails.application.credentials.ynab[:secret]
 end

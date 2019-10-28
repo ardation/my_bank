@@ -9,8 +9,8 @@ class Bank < ApplicationRecord
   belongs_to :user
   has_many :accounts, dependent: :destroy
 
-  attr_encrypted :username, key: [ENV.fetch('BANK_USERNAME_KEY')].pack('H*')
-  attr_encrypted :password, key: [ENV.fetch('BANK_PASSWORD_KEY')].pack('H*')
+  attr_encrypted :username, key: -> { [Rails.application.credentials.bank[:username_key]].pack('H*') }
+  attr_encrypted :password, key: -> { [Rails.application.credentials.bank[:password_key]].pack('H*') }
 
   validates :type, inclusion: { in: Bank::TYPES.values }, presence: true
   validates :username, :password, presence: true
