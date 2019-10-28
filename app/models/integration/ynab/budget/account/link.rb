@@ -6,4 +6,12 @@ class Integration::Ynab::Budget::Account::Link < ApplicationRecord
   validates :budget_account_id, uniqueness: { scope: [:bank_account_id] }
 
   delegate :integration, to: :budget_account
+
+  after_commit :perform_sync, on: %i[create update]
+
+  protected
+
+  def perform_sync
+    Integration::SyncJob.perform_later(integration)
+  end
 end

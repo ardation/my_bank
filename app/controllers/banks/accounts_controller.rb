@@ -16,7 +16,7 @@ class Banks::AccountsController < BanksController
   protected
 
   def load_accounts
-    @accounts ||= account_scope.page params[:page]
+    @accounts ||= account_scope.order(:name).page params[:page]
   end
 
   def load_account
