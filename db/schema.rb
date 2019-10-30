@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_30_061704) do
+ActiveRecord::Schema.define(version: 2019_10_30_184057) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -66,6 +66,9 @@ ActiveRecord::Schema.define(version: 2019_10_30_061704) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.text "session"
+    t.datetime "locked_at"
+    t.datetime "last_sync_attempted_at"
+    t.datetime "last_sync_at"
     t.index ["encrypted_password_iv"], name: "index_banks_on_encrypted_password_iv", unique: true
     t.index ["encrypted_username_iv"], name: "index_banks_on_encrypted_username_iv", unique: true
     t.index ["user_id"], name: "index_banks_on_user_id"
@@ -111,6 +114,9 @@ ActiveRecord::Schema.define(version: 2019_10_30_061704) do
     t.text "extra"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "locked_at"
+    t.datetime "last_sync_attempted_at"
+    t.datetime "last_sync_at"
     t.index ["user_id", "type"], name: "index_integrations_on_user_id_and_type", unique: true
     t.index ["user_id"], name: "index_integrations_on_user_id"
   end

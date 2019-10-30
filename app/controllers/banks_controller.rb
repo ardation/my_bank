@@ -63,7 +63,7 @@ class BanksController < ApplicationController
     return false unless @bank.save
 
     redirect_to bank_path(@bank)
-    flash[:success] = 'Bank Connection saved successfully. Please allow 10 minutes for My Bank to sync your data.'
+    flash[:success] = 'Bank Connection saved successfully. Sync will begin shortly.'
     true
   end
 

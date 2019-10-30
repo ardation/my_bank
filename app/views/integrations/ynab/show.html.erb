@@ -1,3 +1,8 @@
+<% if integration.locked_at.present? %>
+<div class="alert alert-info">
+  Sync currently in progress.
+</div>
+<% end %>
 <%
 @grouped_options = current_user.bank_accounts.includes(:bank).decorate.inject({}) do |options, bank_account|
   options[bank_account.category_name] ||= []

@@ -30,7 +30,7 @@ class Integrations::Ynab::Budgets::Accounts::LinksController < Integrations::Yna
     return false unless @link.save
 
     redirect_to integration_path(@link.integration)
-    flash[:success] = 'Bank to Budget Link added successfully. Please allow 10 minutes for My Bank to sync your data.'
+    flash[:success] = 'Bank to Budget Link added successfully. Sync will begin shortly.'
     true
   end
 

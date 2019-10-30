@@ -1,3 +1,9 @@
+
+<% if bank.locked_at.present? %>
+<div class="alert alert-info">
+  Sync currently in progress.
+</div>
+<% end %>
 <div class="m-0 px-3 pb-4 border-bottom border-primary d-flex align-items-center">
   <div class="flex-grow-1">
     <%= image_pack_tag("banks/#{bank.name.underscore}.png", style: 'height: 50px') %>

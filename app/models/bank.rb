@@ -20,11 +20,20 @@ class Bank < ApplicationRecord
 
   serialize :session, JSON
 
+  # rubocop:disable Rails/SkipsModelValidations
   def sync(start_date = (Time.zone.today - 1.month).beginning_of_month, end_date = Time.zone.today)
-    return unless Bank::TYPES.values.include?(type)
+    return unless Bank::TYPES.values.include?(type) && locked_at.nil?
 
-    "#{type}::PullService".classify.constantize.pull(self, start_date, end_date)
+    begin
+      time_update_began = Time.current
+      update_columns(locked_at: time_update_began, last_sync_attempted_at: time_update_began)
+      "#{type}::PullService".classify.constantize.pull(self, start_date, end_date)
+      update_columns(last_sync_at: time_update_began)
+    ensure
+      update_columns(locked_at: nil)
+    end
   end
+  # rubocop:enable Rails/SkipsModelValidations
 
   protected
 
