@@ -1,5 +1,14 @@
+require 'sidekiq/web'
+require 'sidekiq/cron/web'
+require 'sidekiq_unique_jobs/web'
+
+Sidekiq::Web.set :session_secret, Rails.application.credentials.try(:[], :secret_key_base)
+
 Rails.application.routes.draw do
   devise_for :users
+  authenticate :user, ->(user) { Rails.env.development? || user.admin? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
   get '/auth/:provider', to: ->(_env) { [404, {}, ['Not Found']] }, as: :auth
   get '/auth/:provider/callback', to: 'sessions#create'
 

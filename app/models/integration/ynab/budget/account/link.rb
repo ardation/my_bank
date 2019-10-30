@@ -12,6 +12,6 @@ class Integration::Ynab::Budget::Account::Link < ApplicationRecord
   protected
 
   def perform_sync
-    Integration::SyncJob.perform_later(integration)
+    Integration::SyncWorker.perform_async(integration.id)
   end
 end

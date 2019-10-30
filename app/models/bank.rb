@@ -29,7 +29,7 @@ class Bank < ApplicationRecord
   protected
 
   def perform_sync
-    Bank::SyncJob.perform_later(self)
+    Bank::SyncWorker.perform_async(id)
   end
 
   def validate_credentials

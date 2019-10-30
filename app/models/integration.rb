@@ -32,6 +32,6 @@ class Integration < ApplicationRecord
   protected
 
   def perform_sync
-    Integration::SyncJob.perform_later(self)
+    Integration::SyncWorker.perform_async(id)
   end
 end
