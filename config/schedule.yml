@@ -3,6 +3,6 @@ bank_sync_collection_worker:
   class: "Bank::SyncCollectionWorker"
   queue: cron
 integration_sync_collection_worker:
-  cron: "0 0 */1 * *"
+  cron: "5-59/10 * * * *"
   class: "Integration::SyncCollectionWorker"
   queue: cron
