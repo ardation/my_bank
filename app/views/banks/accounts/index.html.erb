@@ -4,15 +4,19 @@
   Sync currently in progress.
 </div>
 <% end %>
-<div class="m-0 px-3 pb-4 border-bottom border-primary d-flex align-items-center">
-  <div class="flex-grow-1">
+<div class="m-0 py-4 border-bottom border-primary align-items-center row">
+  <div class="col-12 col-md-6 pb-2 pb-md-0">
     <%= image_pack_tag("banks/#{bank.name.underscore}.png", style: 'height: 50px') %>
     <br>
-    <small class="text-muted"><%= bank.username %></small>
+    <small class="text-muted">
+      <%= bank.username %> &#183;
+      Last sync <%= bank.last_sync_at.present? ? "#{time_ago_in_words(bank.last_sync_at)} ago" : 'never' %> &#183;
+      <%= link_to 'Sync Now', sync_bank_path(bank) %>
+    </small>
   </div>
-  <div>
-    <%= link_to 'New Bank Connection', new_bank_path, class: 'btn btn-outline-secondary' %>
-    <%= link_to 'Edit Bank Connection', edit_bank_path(bank), class: 'btn btn-secondary' %>
+  <div class="col-12 col-md-6 text-md-right">
+    <%= link_to 'Add Bank', new_bank_path, class: 'btn btn-outline-secondary' %>
+    <%= link_to 'Edit', edit_bank_path(bank), class: 'btn btn-secondary' %>
   </div>
 </div>
 <% if accounts.present? %>

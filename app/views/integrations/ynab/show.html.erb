@@ -4,19 +4,23 @@
 </div>
 <% end %>
 <%
-@grouped_options = current_user.bank_accounts.includes(:bank).decorate.inject({}) do |options, bank_account|
+@grouped_options = current_user.bank_accounts.includes(:bank).order(:name).decorate.inject({}) do |options, bank_account|
   options[bank_account.category_name] ||= []
   options[bank_account.category_name] << [bank_account.name, bank_account.id]
   options
 end
 %>
-<div class="m-0 px-3 pb-4 border-bottom border-primary d-flex align-items-center">
-  <div class="flex-grow-1">
+<div class="m-0 py-4 border-bottom border-primary align-items-center row">
+  <div class="col-12 col-md-6 pb-2 pb-md-0">
     <%= image_pack_tag("integrations/ynab.png", style: 'height: 50px') %>
+    <br>
+    <small class="text-muted">
+      Last sync <%= integration.last_sync_at.present? ? "#{time_ago_in_words(integration.last_sync_at)} ago" : 'never' %> &#183;
+      <%= link_to 'Sync Now', sync_integration_path(integration) %>
+    </small>
   </div>
-  <div>
-      <%= link_to 'New Integration', new_integration_path, class: 'btn btn-outline-secondary' %>
-      <%= link_to 'Delete Integration', integration_path(integration), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure?' } %>
+  <div class="col-12 col-md-6 text-md-right">
+      <%= link_to 'Remove Integration', integration_path(integration), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure?' } %>
   </div>
 </div>
 <div class="container">
@@ -34,7 +38,7 @@ end
             <h5 class="d-flex align-items-center py-3 mb-0">
               <div class="flex-grow-1"><%= budget_account.name %></div>
               <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#budget-account-list-form-<%= budget_account.id %>" aria-expanded="false" aria-controls="budget-account-list-form-<%= budget_account.id %>">
-                Add Bank Account
+                Add
               </button>
             </h5>
             <% budget_account.links.each do |link| %>

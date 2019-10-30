@@ -44,6 +44,17 @@ class BanksController < ApplicationController
     flash[:warning] = 'Bank Connection deleted successfully.'
   end
 
+  def sync
+    load_bank
+    if @bank.locked_at.present?
+      flash[:warning] = 'Sync already in progress.'
+    else
+      @bank.perform_sync
+      flash[:success] = 'Sync will begin shortly.'
+    end
+    redirect_to bank_accounts_path(@bank)
+  end
+
   protected
 
   def load_banks

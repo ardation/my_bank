@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   get '/auth/:provider/callback', to: 'sessions#create'
 
   resources :banks do
+    member do
+      get :sync
+    end
     scope module: :banks do
       resources :accounts, only: %i[index show] do
         scope module: :accounts do
@@ -23,6 +26,9 @@ Rails.application.routes.draw do
   end
 
   resources :integrations do
+    member do
+      get :sync
+    end
     scope module: :integrations do
       namespace :ynab do
         resources :budgets, only: [] do

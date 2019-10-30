@@ -40,8 +40,6 @@ class Integration < ApplicationRecord
     "#{type}::PushService".classify.constantize.push(self)
   end
 
-  protected
-
   def perform_sync
     Integration::SyncWorker.perform_async(id)
   end

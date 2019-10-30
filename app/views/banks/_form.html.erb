@@ -7,10 +7,10 @@
   <div class="actions">
     <% if bank.persisted? %>
     <div class="float-left">
-      <%= link_to 'Delete Bank Connection', bank_path(bank), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure?' } %>
+      <%= link_to 'Remove Bank', bank_path(bank), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure?' } %>
     </div>
     <% end %>
     <%= link_to 'Cancel', bank_path(bank), class: 'btn btn-link' if bank.persisted? %>
-    <%= f.submit class: 'btn btn-primary', value: 'Save Bank Connection', data: { 'disable-with' => 'Save Bank Connection' } %>
+    <%= f.submit class: 'btn btn-primary', value: 'Save', data: { 'disable-with' => 'Save' } %>
   </div>
 <% end %>

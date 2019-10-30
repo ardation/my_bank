@@ -35,11 +35,11 @@ class Bank < ApplicationRecord
   end
   # rubocop:enable Rails/SkipsModelValidations
 
-  protected
-
   def perform_sync
     Bank::SyncWorker.perform_async(id)
   end
+
+  protected
 
   def validate_credentials
     return false unless Bank::TYPES.values.include?(type) && username.present? && password.present?

@@ -32,6 +32,17 @@ class IntegrationsController < ApplicationController
     flash[:warning] = 'Integration deleted successfully.'
   end
 
+  def sync
+    load_integration
+    if @integration.locked_at.present?
+      flash[:warning] = 'Sync already in progress.'
+    else
+      @integration.perform_sync
+      flash[:success] = 'Sync will begin shortly.'
+    end
+    redirect_to integration_path(@integration)
+  end
+
   protected
 
   def load_integrations
