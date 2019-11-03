@@ -43,11 +43,7 @@ class Bank::Anz::PullService
       attributes = json_transaction_attributes(remote_transaction)
       next unless attributes[:posted_at]
 
-      transaction = account.transactions.find_or_initialize_by(
-        posted_at: attributes[:posted_at], name: attributes[:name], amount: attributes[:amount]
-      )
-      transaction.attributes = attributes
-      transaction.save
+      account.transactions.find_or_create_by(attributes)
     end
   end
 
