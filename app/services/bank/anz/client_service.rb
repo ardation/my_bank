@@ -80,10 +80,7 @@ class Bank::Anz::ClientService
 
   def login_body
     {
-      firstPage: '',
-      password: encrypt(bank.password),
-      publicKeyId: public_key['publicKeyId'],
-      userId: bank.username
+      firstPage: '', password: encrypt(bank.password), publicKeyId: public_key['publicKeyId'], userId: bank.username
     }.to_json
   end
 
