@@ -10,11 +10,12 @@ class Bank::Anz::ClientService
     response = client.get("https://secure.anz.co.nz/IBCS/service/api/customers/#{customer_id}")
     JSON.parse(response.body)['accounts'].map do |remote_account|
       begin
-        ofx_account = transactions(remote_account['id'], start_date, end_date).account
+        ofx_account = ofx_transactions(remote_account['id'], start_date, end_date).account
       rescue StandardError
         Rails.logger.info('no transactions found')
       end
-      { ofx_account: ofx_account, anz_account: remote_account }
+      json_account = json_transactions(remote_account['id'], start_date, end_date) unless ofx_account
+      { ofx_account: ofx_account, json_account: json_account, anz_account: remote_account }
     end
   end
 
@@ -24,15 +25,30 @@ class Bank::Anz::ClientService
 
   protected
 
-  def transactions(account_id, start_date, end_date)
-    response = client.post(
-      'https://secure.anz.co.nz/IBCS/service/account/export-transactions',
-      transaction_query(account_id, start_date, end_date).to_json,
+  def ofx_transactions(account_id, start_date, end_date)
+    response = JSON.parse(
+      client.post(
+        'https://secure.anz.co.nz/IBCS/service/account/export-transactions',
+        ofx_transaction_query(account_id, start_date, end_date).to_json,
+        'Content-Type' => 'application/json',
+        'X-CSRFToken' => token
+      ).body
+    )
+    return unless response['success']
+
+    ofx_file = client.get("https://secure.anz.co.nz#{response['downloadUrl']}")
+    OFX(ofx_file.body)
+  end
+
+  def json_transactions(account_id, start_date, end_date)
+    response = client.get(
+      'https://secure.anz.co.nz/IBCS/service/api/transactions',
+      json_transaction_query(account_id, start_date, end_date),
+      nil,
       'Content-Type' => 'application/json',
       'X-CSRFToken' => token
     )
-    ofx_file = client.get("https://secure.anz.co.nz#{JSON.parse(response.body)['downloadUrl']}")
-    OFX(ofx_file.body)
+    JSON.parse(response.body)['transactions']
   end
 
   def client
@@ -71,7 +87,7 @@ class Bank::Anz::ClientService
     }.to_json
   end
 
-  def transaction_query(account_id, start_date, end_date)
+  def ofx_transaction_query(account_id, start_date, end_date)
     {
       accountUuid: account_id,
       exportFormat: 'OFX',
@@ -81,6 +97,16 @@ class Bank::Anz::ClientService
       sortColumn: 'postdate',
       toDate: end_date.strftime('%Y-%m-%d')
     }
+  end
+
+  def json_transaction_query(account_id, start_date, end_date)
+    [
+      ['account', account_id],
+      ['ascending', false],
+      ['from', start_date.strftime('%Y-%m-%d')],
+      %w[order trandate],
+      ['to', end_date.strftime('%Y-%m-%d')]
+    ]
   end
 
   def public_key

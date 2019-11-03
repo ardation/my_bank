@@ -26,13 +26,27 @@ class Bank::Anz::PullService
     account = bank.accounts.find_or_initialize_by(remote_id: remote_account[:anz_account]['accountNumber'])
     account.attributes = account_attributes(remote_account[:anz_account], remote_account[:ofx_account])
     account.save
-    pull_transactions(account, remote_account[:ofx_account].transactions) if remote_account[:ofx_account]
+    ofx_pull_transactions(account, remote_account[:ofx_account].transactions) if remote_account[:ofx_account]
+    json_pull_transactions(account, remote_account[:json_account]) if remote_account[:json_account]
   end
 
-  def pull_transactions(account, remote_transactions)
+  def ofx_pull_transactions(account, remote_transactions)
     remote_transactions.each do |remote_transaction|
       transaction = account.transactions.find_or_initialize_by(remote_id: remote_transaction.fit_id)
-      transaction.attributes = transaction_attributes(remote_transaction)
+      transaction.attributes = ofx_transaction_attributes(remote_transaction)
+      transaction.save
+    end
+  end
+
+  def json_pull_transactions(account, remote_transactions)
+    remote_transactions.each do |remote_transaction|
+      attributes = json_transaction_attributes(remote_transaction)
+      next unless attributes[:posted_at]
+
+      transaction = account.transactions.find_or_initialize_by(
+        posted_at: attributes[:posted_at], name: attributes[:name], amount: attributes[:amount]
+      )
+      transaction.attributes = attributes
       transaction.save
     end
   end
@@ -52,7 +66,7 @@ class Bank::Anz::PullService
     }.delete_if { |_k, v| v.nil? }
   end
 
-  def transaction_attributes(remote_transaction)
+  def ofx_transaction_attributes(remote_transaction)
     {
       amount: remote_transaction.amount,
       check_number: remote_transaction.check_number,
@@ -64,5 +78,28 @@ class Bank::Anz::PullService
       transaction_type: remote_transaction.type,
       sic: remote_transaction.sic
     }.delete_if { |_k, v| v.nil? }
+  end
+
+  def json_transaction_attributes(remote_transaction)
+    {
+      amount: json_transaction_amount(remote_transaction),
+      memo: remote_transaction['details'].try(:[], 1),
+      name: remote_transaction['details'][0].squish,
+      posted_at: remote_transaction['postedDate'],
+      ref_number: remote_transaction['cardNo'],
+      transaction_type: json_transaction_type(remote_transaction)
+    }.delete_if { |_k, v| v.nil? }
+  end
+
+  def json_transaction_amount(remote_transaction)
+    if remote_transaction['debitAmount']
+      -remote_transaction['debitAmount']['amount']
+    else
+      remote_transaction['creditAmount']['amount']
+    end
+  end
+
+  def json_transaction_type(remote_transaction)
+    remote_transaction['debitAmount'] ? 'debit' : 'credit'
   end
 end
