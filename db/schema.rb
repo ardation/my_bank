@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_30_184057) do
+ActiveRecord::Schema.define(version: 2019_11_03_210351) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2019_10_30_184057) do
   enable_extension "uuid-ossp"
 
   create_table "bank_account_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.decimal "amount", precision: 8, scale: 2
+    t.decimal "amount", precision: 15, scale: 2
     t.string "check_number"
     t.string "memo"
     t.string "name"
