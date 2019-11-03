@@ -21,8 +21,10 @@ class Bank < ApplicationRecord
   serialize :session, JSON
 
   # rubocop:disable Rails/SkipsModelValidations
-  def sync(start_date = (Time.zone.today - 1.month).beginning_of_month, end_date = Time.zone.today)
+  def sync(start_date = nil, end_date = Time.zone.today)
     return unless Bank::TYPES.values.include?(type) && locked_at.nil?
+
+    start_date ||= ((last_sync_at || 2.years.ago) - 1.month).beginning_of_month
 
     begin
       time_update_began = Time.current
