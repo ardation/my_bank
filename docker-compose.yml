@@ -13,6 +13,7 @@ services:
     restart: always
   app: &app_base
     image: 'ardation/my_bank:latest'
+    privileged: true
     build:
       context: .
       args:
