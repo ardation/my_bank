@@ -3,14 +3,18 @@ services:
   db:
     image: 'postgres:12-alpine'
     volumes:
-      - 'mybank_db:/var/lib/postgresql/data'
+      - 'db:/var/lib/postgresql/data'
     restart: always
+    ports:
+      - 5432
   redis:
     image: 'redis:5-alpine'
     command: redis-server
     volumes:
-      - 'mybank_redis:/data'
+      - 'redis:/data'
     restart: always
+    ports:
+      - 6379
   app: &app_base
     image: 'ardation/my_bank:latest'
     privileged: true
@@ -25,7 +29,7 @@ services:
       - RAILS_ENV=production
       - REDIS_URL=redis://redis:6379/0
       - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
-    depends_on:
+    links:
       - db
       - redis
     restart: always
@@ -35,3 +39,6 @@ services:
     <<: *app_base
     command: bundle exec sidekiq
     ports: []
+volumes:
+  redis:
+  db:
