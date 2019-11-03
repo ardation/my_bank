@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_03_210351) do
+ActiveRecord::Schema.define(version: 2019_11_03_234240) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 2019_11_03_210351) do
     t.string "memo"
     t.string "name"
     t.string "payee"
-    t.datetime "posted_at"
+    t.date "posted_at"
     t.string "ref_number"
     t.string "transaction_type"
     t.string "sic"
