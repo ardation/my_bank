@@ -51,9 +51,10 @@ class Bank::Anz::ClientService
     )
     page = client.get(JSON.parse(response.body)['location'])
     search = page.search('script').text.scan(/IBPage\.sessionCsrfToken = \"(.*)\";/)
-    raise Bank::AuthenticationError if search.empty?
-
     @token = search[0][0]
+  rescue StandardError => e
+    Rollbar.error(e)
+    raise Bank::AuthenticationError
   end
 
   def customer_id
