@@ -51,7 +51,8 @@ class Bank::Asb::ClientService
     client.text_field(id: 'password').set bank.password
     client.button(id: 'loginBtn').click
     bank.update_attribute(:session, client.cookies.to_a)
-  rescue StandardError
+  rescue StandardError => e
+    Rollbar.error(e)
     raise Bank::AuthenticationError
   end
 
