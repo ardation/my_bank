@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_09_195918) do
+ActiveRecord::Schema.define(version: 2019_11_09_195919) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 2019_11_09_195918) do
     t.uuid "account_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.datetime "occurred_at"
+    t.date "occurred_at"
     t.index ["account_id", "remote_id"], name: "index_bank_account_transactions_on_account_id_and_remote_id", unique: true
     t.index ["account_id"], name: "index_bank_account_transactions_on_account_id"
     t.index ["remote_id"], name: "index_bank_account_transactions_on_remote_id"

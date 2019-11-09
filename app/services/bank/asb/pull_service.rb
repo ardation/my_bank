@@ -56,6 +56,7 @@ class Bank::Asb::PullService
       name: remote_transaction.name,
       payee: remote_transaction.payee,
       posted_at: remote_transaction.posted_at,
+      occurred_at: remote_transaction.occurred_at,
       ref_number: remote_transaction.ref_number,
       transaction_type: remote_transaction.type,
       sic: remote_transaction.sic
