@@ -41,9 +41,10 @@ class Bank::Anz::PullService
   def json_pull_transactions(account, remote_transactions)
     remote_transactions.each do |remote_transaction|
       attributes = json_transaction_attributes(remote_transaction)
-      next unless attributes[:posted_at]
 
-      account.transactions.find_or_create_by(attributes)
+      transaction = account.transactions.find_or_initialize_by(attributes.except(:posted_at))
+      transaction.attributes = attributes
+      transaction.save
     end
   end
 
@@ -70,6 +71,7 @@ class Bank::Anz::PullService
       name: remote_transaction.name,
       payee: remote_transaction.payee,
       posted_at: remote_transaction.posted_at,
+      occurred_at: remote_transaction.occurred_at,
       ref_number: remote_transaction.ref_number,
       transaction_type: remote_transaction.type,
       sic: remote_transaction.sic
@@ -82,6 +84,7 @@ class Bank::Anz::PullService
       memo: remote_transaction['details'].try(:[], 1),
       name: remote_transaction['details'][0].squish,
       posted_at: remote_transaction['postedDate'],
+      occurred_at: remote_transaction['date'],
       ref_number: remote_transaction['cardNo'],
       transaction_type: json_transaction_type(remote_transaction)
     }.delete_if { |_k, v| v.nil? }

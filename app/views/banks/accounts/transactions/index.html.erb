@@ -26,22 +26,33 @@
       <tr class="d-flex">
         <th scope="col" class="col-2">Date</th>
         <th scope="col" class="col-2">Type</th>
-        <th scope="col" class="col-4">Details</th>
-        <th scope="col" class="col-2 text-right">Cr.</th>
-        <th scope="col" class="col-2 text-right">Dr.</th>
+        <th scope="col" class="col-5">Details</th>
+        <th scope="col" class="col-2 text-right"></th>
+        <th scope="col" class="col-1"></th>
       </tr>
     </thead>
     <tbody>
     <% transactions.each do |transaction| %>
       <tr class="d-flex">
-        <td class="col-2"><%= localize transaction.posted_at.to_date, format: :default %></td>
+        <td class="col-2">
+          <%= localize (transaction.occurred_at || transaction.posted_at).to_date, format: :default %>
+        </td>
         <td class="col-2"><%= transaction.transaction_type %></td>
-        <td class="col-4">
+        <td class="col-5">
           <%= transaction.name %>
           <br><small class="text-muted"><%= transaction.memo %></small>
         </td>
-        <td class="col-2 text-right"><%= transaction.amount.format if transaction.amount >= 0 %></td>
-        <td class="col-2 text-right"><%= transaction.amount.format.gsub('-', '') if transaction.amount < 0 %></td>
+        <% if transaction.amount >= 0 %>
+          <td class="col-2 text-right text-success"><%= transaction.amount %></td>
+        <% end %>
+        <% if transaction.amount < 0 %>
+          <td class="col-2 text-right text-danger"><%= transaction.amount %></td>
+        <% end %>
+        <td class="col-1 text-center">
+          <% if transaction.posted_at %>
+            <strong>&#10003;</strong>
+          <% end %>
+        </td>
       </tr>
     <% end %>
     </tbody>

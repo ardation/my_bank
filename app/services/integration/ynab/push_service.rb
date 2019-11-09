@@ -31,11 +31,12 @@ class Integration::Ynab::PushService
     transactions.map do |transaction|
       {
         account_id: account_id,
-        date: transaction.posted_at.strftime('%Y-%m-%d'),
+        date: transaction.posted_at&.strftime('%Y-%m-%d') || transaction.occurred_at&.strftime('%Y-%m-%d'),
         amount: (transaction.amount * 1000).to_i,
         payee_name: transaction.name,
         memo: transaction.memo,
-        import_id: transaction.id
+        import_id: transaction.id,
+        cleared: transaction.posted_at ? 'cleared' : 'uncleared'
       }
     end
   end
