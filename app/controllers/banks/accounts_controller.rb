@@ -1,7 +1,7 @@
 class Banks::AccountsController < BanksController
   decorates_assigned :accounts, :account
   before_action :load_bank
-  breadcrumb -> { bank.name }, -> { bank_path bank }
+  breadcrumb -> { "#{bank.name} #{bank.username}" }, -> { bank_path bank }
   breadcrumb 'Accounts', -> { bank_accounts_path bank }
 
   def index

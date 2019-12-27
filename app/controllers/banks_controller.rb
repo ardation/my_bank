@@ -27,7 +27,7 @@ class BanksController < ApplicationController
   def edit
     load_bank
     build_bank
-    breadcrumb bank.name, bank_path(bank)
+    breadcrumb "#{bank.name} #{bank.username}", bank_path(bank)
     breadcrumb 'Edit', edit_bank_path(bank)
   end
 
