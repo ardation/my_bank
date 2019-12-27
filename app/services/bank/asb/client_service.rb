@@ -67,7 +67,7 @@ class Bank::Asb::ClientService
   def download_directory
     return @download_directory if @download_directory
 
-    @download_directory = Rails.root.join('tmp', 'downloads')
+    @download_directory = Rails.root.join('tmp', 'downloads', 'asb', bank.username)
     FileUtils.mkdir_p @download_directory
     @download_directory
   end
@@ -82,6 +82,4 @@ class Bank::Asb::ClientService
     end
     nil
   end
-
-  def complete_recaptcha; end
 end

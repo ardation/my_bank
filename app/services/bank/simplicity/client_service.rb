@@ -50,7 +50,7 @@ class Bank::Simplicity::ClientService
     client.text_field(id: 'Username').set bank.username
     client.text_field(id: 'Password').set bank.password
     client.button(name: 'LogOn').click
-    bank.update_attribute(:session, client.cookies.to_a) # rubocop:disable Rails/SkipsModelValidations
+    bank.update_attribute(:session, client.cookies.to_a)
   rescue StandardError => e
     Rollbar.error(e)
     raise Bank::AuthenticationError
@@ -67,7 +67,7 @@ class Bank::Simplicity::ClientService
   def download_directory
     return @download_directory if @download_directory
 
-    @download_directory = Rails.root.join('tmp', 'downloads')
+    @download_directory = Rails.root.join('tmp', 'downloads', 'simplicity', bank.username)
     FileUtils.mkdir_p @download_directory
     @download_directory
   end
@@ -82,6 +82,4 @@ class Bank::Simplicity::ClientService
     end
     nil
   end
-
-  def complete_recaptcha; end
 end
