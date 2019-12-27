@@ -3,7 +3,8 @@ class Bank < ApplicationRecord
 
   TYPES = {
     'ANZ' => 'Bank::Anz',
-    'ASB' => 'Bank::Asb'
+    'ASB' => 'Bank::Asb',
+    'Simplicity' => 'Bank::Simplicity'
   }.freeze
 
   belongs_to :user
