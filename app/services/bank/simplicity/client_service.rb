@@ -1,85 +1,120 @@
+require 'faraday_middleware'
+require 'faraday_middleware/aws_sigv4'
+
 class Bank::Simplicity::ClientService
-  attr_reader :bank
+  attr_reader :bank, :credentials
 
   def initialize(bank)
     @bank = bank
+    @unit_price = {}
     login
   end
 
-  def logout
-    client.goto('https://app.simplicity.kiwi/login/logout')
-    client.close
+  def logout; end
+
+  def accounts
+    client.post(
+      '/dev1/secure',
+      {
+        operationName: nil,
+        variables: {},
+        query: "{\nAccount(email: \"#{bank.username}\") {\nInvestmentType\nInvestmentCode\n"\
+               "InvestmentName\nPortfolio\nPortfolioCode\nMarketValue\n}\n}\n"
+      }.to_json
+    ).body['data']['Account']
   end
 
-  def transactions
-    client.goto('https://app.simplicity.kiwi/api/download_transactions_report')
-    process_export(file_name)
+  def transactions(account)
+    client.post(
+      '/dev1/secure',
+      {
+        operationName: nil,
+        variables: {},
+        query: "{\nTransactions(id: \"#{account.remote_id}\", portfolioCode: \"#{account.remote_bank_id}\")\n}\n"
+      }.to_json
+    ).body['data']['Transactions']['items']
   end
 
-  def unit_price
-    return @unit_price if @unit_price
-
-    client.goto('https://app.simplicity.kiwi/api/refreshBreakdown')
-    @unit_price = JSON.parse(client.body.text)['since_breakdown']['price']
+  def unit_price(account)
+    @unit_price[account.remote_id] ||= {}
+    @unit_price[account.remote_id][account.remote_bank_id] ||= client.post(
+      '/dev1/secure',
+      {
+        operationName: nil,
+        variables: {},
+        query: "{\nSummary(id: \"#{account.remote_id}\", portfolioCode: \"#{account.remote_bank_id}\", "\
+              "startDate: \"#{start_date(account)}\", endDate: \"#{end_date(account)}\") {\nUnits }\n}\n"
+      }.to_json
+    ).body['data']['Summary']['Units']['UnitPrice'].to_f
   end
 
   protected
 
+  def start_date(account)
+    client.post(
+      '/dev1/secure',
+      {
+        operationName: nil,
+        variables: {},
+        query: "{\nGetJoinDate(id: \"#{account.remote_id}\", portfolioCode: \"#{account.remote_bank_id}\") "\
+               "{\ndate }\n}\n"
+      }.to_json
+    ).body['data']['GetJoinDate']['date']
+  end
+
+  def end_date(_account)
+    Time.zone.now.strftime('%Y-%m-%dT00:00:00')
+  end
+
   def client
-    return @client if @client
-
-    @client = Watir::Browser.new :chrome, options: { args: ['window-size=1920,1080'] }, headless: true
-
-    bridge = @client.driver.send :bridge
-    path = "/session/#{bridge.session_id}/chromium/send_command"
-    params = { behavior: 'allow', downloadPath: download_directory.to_s }
-    bridge.http.call(:post, path, cmd: 'Page.setDownloadBehavior', params: params)
-
-    @client.goto('https://apisimplicity.mmcnz.co.nz/')
-    @client.cookies.clear
-    bank.session&.each do |cookie|
-      @client.cookies.add cookie['name'], cookie['value'], cookie.except('name', 'value')
+    @client ||= Faraday.new(url: 'https://emhdwrmo9d.execute-api.us-west-2.amazonaws.com') do |faraday|
+      faraday.request(
+        :aws_sigv4, service: 'execute-api', region: 'us-west-2', access_key_id: credentials[:access_key_id],
+                    secret_access_key: credentials[:secret_access_key], session_token: credentials[:session_token]
+      )
+      faraday.response :json, content_type: /\bjson\b/
+      faraday.response :raise_error
+      faraday.adapter Faraday.default_adapter
     end
-    @client
+  end
+
+  def browser
+    @browser ||= Watir::Browser.new :chrome, options: { args: ['window-size=1920,1080'] }, headless: true
   end
 
   def login
-    client.goto('https://apisimplicity.mmcnz.co.nz/')
-    return unless client.title == 'Login - Simplicity API'
+    browser.goto('https://app.simplicity.kiwi/login')
+    return unless browser.title == 'Simplicity App - Simplicity NZ Ltd'
 
-    client.text_field(id: 'Username').set bank.username
-    client.text_field(id: 'Password').set bank.password
-    client.button(name: 'LogOn').click
-    bank.update_attribute(:session, client.cookies.to_a)
+    browser.text_field(id: 'email').set bank.username
+    browser.text_field(id: 'password').set bank.password
+    browser.button(type: 'submit').click
+
+    local_storage = browser.h3(text: 'Accounts').wait_until_present.execute_script('return window.localStorage')
+    login_key = local_storage.find { |k, _v| k.starts_with? 'aws.cognito.identity-providers.ap-southeast-2' }[1]
+    identity_id = local_storage.find { |k, _v| k.starts_with? 'aws.cognito.identity-id.ap-southeast-2' }[1]
+    id_token = local_storage.find { |k, _v| k.ends_with? 'idToken' }[1]
+
+    aws_credentials = JSON.parse(
+      Faraday.post(
+        'https://cognito-identity.ap-southeast-2.amazonaws.com/',
+        {
+          "Logins": {
+            login_key => id_token
+          },
+          "IdentityId": identity_id
+        }.to_json,
+        'Content-Type' => 'application/x-amz-json-1.1',
+        'x-amz-target' => 'AWSCognitoIdentityService.GetCredentialsForIdentity'
+      ).body
+    )
+    @credentials = {
+      access_key_id: aws_credentials['Credentials']['AccessKeyId'],
+      secret_access_key: aws_credentials['Credentials']['SecretKey'],
+      session_token: aws_credentials['Credentials']['SessionToken']
+    }
   rescue StandardError => e
     Rollbar.error(e)
     raise Bank::AuthenticationError
-  end
-
-  def process_export(file_path)
-    return unless File.exist?(file_path)
-
-    content = CSV.parse(File.read(file_path), headers: true)
-    File.delete(file_path)
-    content
-  end
-
-  def download_directory
-    return @download_directory if @download_directory
-
-    @download_directory = Rails.root.join('tmp', 'downloads', 'simplicity', bank.username)
-    FileUtils.mkdir_p @download_directory
-    @download_directory
-  end
-
-  def file_name
-    30.times do
-      files = Dir.glob(download_directory.join('*'))
-      return files.first if files.present?
-      return if client.td(class: 'infoMessageTextError').exists?
-
-      sleep 1
-    end
-    nil
   end
 end

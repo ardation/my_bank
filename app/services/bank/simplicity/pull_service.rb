@@ -11,36 +11,43 @@ class Bank::Simplicity::PullService
 
   def self.pull(bank, _start_date, _end_date)
     instance = new(bank)
-    instance.pull_transactions
+    instance.pull_accounts
   ensure
     instance.client.logout
   end
 
-  def pull_transactions
-    client.transactions.each do |remote_transaction|
-      transaction = account.transactions.find_or_initialize_by(remote_id: remote_transaction['Transaction ID'])
-      transaction.attributes = transaction_attributes(remote_transaction)
+  def pull_accounts
+    client.accounts.each do |remote_account|
+      account = bank.accounts.find_or_initialize_by(remote_id: remote_account['InvestmentCode'])
+      account.attributes = {
+        name: "#{remote_account['InvestmentName']} (#{remote_account['Portfolio']})",
+        nickname: remote_account['InvestmentType'],
+        balance_posted_at: Time.zone.now,
+        balance: remote_account['MarketValue'],
+        remote_bank_id: remote_account['PortfolioCode']
+      }
+      account.save
+      pull_transactions(account)
+    end
+  end
+
+  def pull_transactions(account)
+    client.transactions(account).each do |remote_transaction|
+      transaction = account.transactions.find_or_initialize_by(remote_id: remote_transaction['Id'])
+      transaction.attributes = transaction_attributes(account, remote_transaction)
       transaction.save
     end
-    account.update(
-      balance: account.transactions.sum(:amount),
-      balance_posted_at: Time.current
-    )
   end
 
   protected
 
-  def account
-    bank.accounts.first || bank.accounts.create(name: 'KiwiSaver')
-  end
-
-  def transaction_attributes(remote_transaction)
+  def transaction_attributes(account, remote_transaction)
     {
-      amount: remote_transaction['Units'].to_f * client.unit_price,
-      name: remote_transaction['Description'],
-      memo: "#{remote_transaction['Transaction Display Name']} #{remote_transaction['Value']}",
-      posted_at: remote_transaction['Effective Date'].to_date,
-      transaction_type: remote_transaction['Transaction Method']
+      amount: remote_transaction['Units'].to_f * client.unit_price(account),
+      name: remote_transaction['TransactionDescription'],
+      memo: "#{remote_transaction['TransactionDisplayName']} #{remote_transaction['Value']}",
+      posted_at: remote_transaction['EffectiveDate'].to_date,
+      transaction_type: remote_transaction['TransactionMethodType']
     }.delete_if { |_k, v| v.nil? }
   end
 end
