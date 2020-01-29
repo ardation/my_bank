@@ -35,10 +35,12 @@ services:
     restart: always
     ports:
       - '3000:3000'
+    shm_size: 1G
   worker:
     <<: *app_base
     command: bundle exec sidekiq
     ports: []
+    shm_size: 1G
 volumes:
   redis:
   db:
