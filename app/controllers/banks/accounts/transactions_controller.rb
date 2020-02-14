@@ -11,7 +11,7 @@ class Banks::Accounts::TransactionsController < Banks::AccountsController
   protected
 
   def load_transactions
-    @transactions ||= transaction_scope.order(posted_at: :desc).page params[:page]
+    @transactions ||= transaction_scope.order(occurred_at: :desc).page params[:page]
   end
 
   def transaction_scope
