@@ -42,10 +42,24 @@ class Bank::Anz::PullService
     remote_transactions.each do |remote_transaction|
       attributes = json_transaction_attributes(remote_transaction)
 
-      transaction = account.transactions.find_or_initialize_by(attributes.except(:posted_at))
+      transaction = find_or_initialize_transaction_by(account, attributes)
       transaction.attributes = attributes
       transaction.save
     end
+  end
+
+  def find_or_initialize_transaction_by(account, attributes)
+    transaction = account.transactions.find_by(attributes)
+    return account.transactions.build if attributes[:posted_at].nil?
+
+    fuzzy_transactions = account.transactions.where(
+      'amount > ? AND amount < ?', attributes[:amount] - 1, attributes[:amount] + 1
+    ).where(
+      occurred_at: (attributes[:occurred_at] - 1.day)..(attributes[:occurred_at] + 1.day),
+      posted_at: nil
+    ).where(attributes.slice(:ref_number, :transaction_type))
+    transaction ||= FuzzyMatch.new(fuzzy_transactions, read: :name).find(attributes[:name])
+    transaction || account.transactions.build
   end
 
   def account_attributes(anz_account, ofx_account)
@@ -84,7 +98,7 @@ class Bank::Anz::PullService
       memo: remote_transaction['details'].try(:[], 1),
       name: remote_transaction['details'][0].squish,
       posted_at: remote_transaction['postedDate'],
-      occurred_at: remote_transaction['date'],
+      occurred_at: Date.strptime(remote_transaction['date']),
       ref_number: remote_transaction['cardNo'],
       transaction_type: json_transaction_type(remote_transaction)
     }.delete_if { |_k, v| v.nil? }
