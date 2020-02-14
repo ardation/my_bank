@@ -50,6 +50,7 @@ class Bank::Anz::PullService
 
   def find_or_initialize_transaction_by(account, attributes)
     transaction = account.transactions.find_by(attributes)
+    return transaction if transaction
     return account.transactions.build if attributes[:posted_at].nil?
 
     fuzzy_transactions = account.transactions.where(
@@ -58,8 +59,7 @@ class Bank::Anz::PullService
       occurred_at: (attributes[:occurred_at] - 1.day)..(attributes[:occurred_at] + 1.day),
       posted_at: nil
     ).where(attributes.slice(:ref_number, :transaction_type))
-    transaction ||= FuzzyMatch.new(fuzzy_transactions, read: :name).find(attributes[:name])
-    transaction || account.transactions.build
+    FuzzyMatch.new(fuzzy_transactions, read: :name).find(attributes[:name]) || account.transactions.build
   end
 
   def account_attributes(anz_account, ofx_account)
