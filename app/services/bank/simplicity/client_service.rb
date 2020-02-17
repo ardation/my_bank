@@ -14,7 +14,7 @@ class Bank::Simplicity::ClientService
 
   def accounts
     client.post(
-      '/dev1/secure',
+      '/prod/secure',
       {
         operationName: nil,
         variables: {},
@@ -26,7 +26,7 @@ class Bank::Simplicity::ClientService
 
   def transactions(account)
     client.post(
-      '/dev1/secure',
+      '/prod/secure',
       {
         operationName: nil,
         variables: {},
@@ -38,7 +38,7 @@ class Bank::Simplicity::ClientService
   def unit_price(account)
     @unit_price[account.remote_id] ||= {}
     @unit_price[account.remote_id][account.remote_bank_id] ||= client.post(
-      '/dev1/secure',
+      '/prod/secure',
       {
         operationName: nil,
         variables: {},
@@ -52,7 +52,7 @@ class Bank::Simplicity::ClientService
 
   def start_date(account)
     client.post(
-      '/dev1/secure',
+      '/prod/secure',
       {
         operationName: nil,
         variables: {},
@@ -67,10 +67,10 @@ class Bank::Simplicity::ClientService
   end
 
   def client
-    @client ||= Faraday.new(url: 'https://emhdwrmo9d.execute-api.us-west-2.amazonaws.com') do |faraday|
+    @client ||= Faraday.new(url: 'https://h4ku5ofov2.execute-api.ap-southeast-2.amazonaws.com') do |faraday|
       faraday.request(
-        :aws_sigv4, service: 'execute-api', region: 'us-west-2', access_key_id: credentials[:access_key_id],
-                    secret_access_key: credentials[:secret_access_key], session_token: credentials[:session_token]
+        :aws_sigv4, service: 'execute-api', region: 'ap-southeast-2', access_key_id: credentials['accessKeyId'],
+                    secret_access_key: credentials['secretAccessKey'], session_token: credentials['sessionToken']
       )
       faraday.response :json, content_type: /\bjson\b/
       faraday.response :raise_error
@@ -91,28 +91,7 @@ class Bank::Simplicity::ClientService
     browser.button(type: 'submit').click
 
     local_storage = browser.h3(text: 'Accounts').wait_until_present.execute_script('return window.localStorage')
-    login_key = local_storage.find { |k, _v| k.starts_with? 'aws.cognito.identity-providers.ap-southeast-2' }[1]
-    identity_id = local_storage.find { |k, _v| k.starts_with? 'aws.cognito.identity-id.ap-southeast-2' }[1]
-    id_token = local_storage.find { |k, _v| k.ends_with? 'idToken' }[1]
-
-    aws_credentials = JSON.parse(
-      Faraday.post(
-        'https://cognito-identity.ap-southeast-2.amazonaws.com/',
-        {
-          "Logins": {
-            login_key => id_token
-          },
-          "IdentityId": identity_id
-        }.to_json,
-        'Content-Type' => 'application/x-amz-json-1.1',
-        'x-amz-target' => 'AWSCognitoIdentityService.GetCredentialsForIdentity'
-      ).body
-    )
-    @credentials = {
-      access_key_id: aws_credentials['Credentials']['AccessKeyId'],
-      secret_access_key: aws_credentials['Credentials']['SecretKey'],
-      session_token: aws_credentials['Credentials']['SessionToken']
-    }
+    @credentials = JSON.parse(local_storage['simplicityweb'])
   rescue StandardError => e
     Rollbar.error(e)
     raise Bank::AuthenticationError
