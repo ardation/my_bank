@@ -43,4 +43,6 @@ services:
     shm_size: '1gb'
 volumes:
   redis:
+    driver: local
   db:
+    driver: local
