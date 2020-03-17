@@ -7,7 +7,6 @@ class Bank::Asb::ClientService
   end
 
   def logout
-    # client.link(class: 'logout').click
     client.close
   end
 

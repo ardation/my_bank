@@ -95,5 +95,7 @@ class Bank::Simplicity::ClientService
   rescue StandardError => e
     Rollbar.error(e)
     raise Bank::AuthenticationError
+  ensure
+    browser.close
   end
 end
