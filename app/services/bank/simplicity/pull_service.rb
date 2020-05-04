@@ -46,7 +46,7 @@ class Bank::Simplicity::PullService
       amount: remote_transaction['Units'].to_f * client.unit_price(account),
       name: remote_transaction['TransactionDescription'],
       memo: "#{remote_transaction['TransactionDisplayName']} #{remote_transaction['Value']}",
-      posted_at: remote_transaction['EffectiveDate'].to_date,
+      occurred_at: remote_transaction['EffectiveDate'].to_date,
       transaction_type: remote_transaction['TransactionMethodType']
     }.delete_if { |_k, v| v.nil? }
   end
