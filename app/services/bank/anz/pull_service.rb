@@ -107,8 +107,10 @@ class Bank::Anz::PullService
   def json_transaction_amount(remote_transaction)
     if remote_transaction['debitAmount']
       -remote_transaction['debitAmount']['amount']
-    else
+    elsif remote_transaction['creditAmount']
       remote_transaction['creditAmount']['amount']
+    else
+      0
     end
   end
 
