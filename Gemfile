@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.5'
+gem 'amazing_print'
 gem 'attr_encrypted', '~> 3.1.0'
-gem 'awesome_rails_console'
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bootstrap4-kaminari-views'
 gem 'devise'
@@ -22,6 +22,7 @@ gem 'ofx', github: 'annacruz/ofx'
 gem 'omniauth'
 gem 'omniauth-ynab'
 gem 'pg', '>= 0.18', '< 2.0'
+gem 'pry-rails'
 gem 'puma', '~> 3.12'
 gem 'rails', '~> 6.0.0'
 gem 'rollbar'
@@ -44,10 +45,10 @@ group :development do
 end
 group :development, :test do
   gem 'pry-byebug'
-  gem 'pry-stack_explorer'
   gem 'rspec-rails', '~> 3.8'
   gem 'webdrivers'
 end
 group :test do
   gem 'factory_bot'
 end
+gem 'marco-polo'
