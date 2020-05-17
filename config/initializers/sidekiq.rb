@@ -4,6 +4,11 @@ redis_config = { url: ENV['REDIS_URL'] }
 
 Sidekiq.configure_server do |config|
   config.redis = redis_config
+
+  config.death_handlers << lambda { |job, _ex|
+    digest = job['unique_digest']
+    SidekiqUniqueJobs::Digests.delete_by_digest(digest) if digest
+  }
 end
 
 Sidekiq.configure_client do |config|
