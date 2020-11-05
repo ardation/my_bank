@@ -69,8 +69,8 @@ class Bank::Simplicity::ClientService
   def client
     @client ||= Faraday.new(url: 'https://h4ku5ofov2.execute-api.ap-southeast-2.amazonaws.com') do |faraday|
       faraday.request(
-        :aws_sigv4, service: 'execute-api', region: 'ap-southeast-2', access_key_id: credentials['accessKeyId'],
-                    secret_access_key: credentials['secretAccessKey'], session_token: credentials['sessionToken']
+        :aws_sigv4, service: 'execute-api', region: 'ap-southeast-2', access_key_id: credentials['AccessKeyId'],
+                    secret_access_key: credentials['SecretKey'], session_token: credentials['SessionToken']
       )
       faraday.response :json, content_type: /\bjson\b/
       faraday.response :raise_error
@@ -89,13 +89,40 @@ class Bank::Simplicity::ClientService
     browser.text_field(id: 'email').set bank.username
     browser.text_field(id: 'password').set bank.password
     browser.button(type: 'submit').click
-
     local_storage = browser.h3(text: 'Accounts').wait_until_present.execute_script('return window.localStorage')
-    @credentials = JSON.parse(local_storage['simplicityweb'])
+    fetch_credentials(local_storage)
   rescue StandardError => e
     Rollbar.error(e)
     raise Bank::AuthenticationError
   ensure
     browser.close
+  end
+
+  def fetch_credentials(local_storage)
+    @credentials = JSON.parse(
+      HTTParty.post(
+        'https://cognito-identity.ap-southeast-2.amazonaws.com/',
+        {
+          body: credential_request_body(local_storage),
+          headers: {
+            'Content-Type' => 'application/x-amz-json-1.1',
+            'x-amz-target' => 'AWSCognitoIdentityService.GetCredentialsForIdentity'
+          }
+        }
+      ).response.body
+    )['Credentials']
+  end
+
+  def credential_request_body(local_storage)
+    {
+      'Logins' => {
+        local_storage[
+          "aws.cognito.identity-providers.ap-southeast-2:0ed33fc6-4cef-4f2e-b634-31c616e108e2#{bank.username}"
+        ] => local_storage["CognitoIdentityServiceProvider.kvoiu7unft0c8hqqsa6hkmeu5.#{bank.username}.idToken"]
+      },
+      'IdentityId' => local_storage[
+        "aws.cognito.identity-id.ap-southeast-2:0ed33fc6-4cef-4f2e-b634-31c616e108e2#{bank.username}"
+      ]
+    }.to_json
   end
 end
