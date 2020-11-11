@@ -11,7 +11,7 @@ class User < ApplicationRecord
       type: "Integration::#{provider.classify}",
       provider: provider
     )
-    integration.attributes = auth
+    integration.attributes = auth.to_hash
     integration.save
 
     integration

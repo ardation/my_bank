@@ -15,6 +15,15 @@ class Integration::Ynab::ClientService
   end
 
   def create_transactions(budget_id, transactions)
-    self.class.post("/v1/budgets/#{budget_id}/transactions", @options.merge(body: { transactions: transactions }))
+    response =
+      self.class.post("/v1/budgets/#{budget_id}/transactions", @options.merge(body: { transactions: transactions }))
+    update_transactions(
+      budget_id,
+      transactions.select { |t| response.parsed_response['data']['duplicate_import_ids'].include? t[:import_id] }
+    )
+  end
+
+  def update_transactions(budget_id, transactions)
+    self.class.patch("/v1/budgets/#{budget_id}/transactions", @options.merge(body: { transactions: transactions }))
   end
 end

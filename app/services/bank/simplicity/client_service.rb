@@ -45,7 +45,7 @@ class Bank::Simplicity::ClientService
         query: "{\nSummary(id: \"#{account.remote_id}\", portfolioCode: \"#{account.remote_bank_id}\", "\
               "startDate: \"#{start_date(account)}\", endDate: \"#{end_date(account)}\") {\nUnits }\n}\n"
       }.to_json
-    ).body['data']['Summary']['Units']['UnitPrice'].to_f
+    ).body.dig('data', 'Summary', 'Units', 'UnitPrice').to_f
   end
 
   protected
